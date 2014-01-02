@@ -1,13 +1,26 @@
 {
   "name": "heppuppet-nagios",
   "version": "0.1.0",
-  "summary": "",
+  "summary": "Puppet module for Nagios monitoring",
   "author": "kreczko",
   "description": "",
-  "dependencies": [],
+  "dependencies": [
+    {
+      "name": "puppetlabs/apache",
+      "version_requirement": "\u003e\u003d0.9.0"
+    },
+    {
+      "name": "heppuppet/grid_repos",
+      "version_requirement": "0.1.0"
+    },
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": "\u003e\u003d4.1.0"
+    }
+  ],
   "types": [],
   "checksums": {},
-  "source": "",
-  "project_page": "",
-  "license": ""
+  "source": "https://github.com/HEP-Puppet/nagios",
+  "project_page": "http://hep-puppet.github.io/",
+  "license": "Apache License, Version 2.0"
 }
