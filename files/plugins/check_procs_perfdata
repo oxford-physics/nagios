@@ -1,0 +1,51 @@
+#!/usr/bin/perl -w
+
+use strict;
+use Getopt::Long;
+
+# Find our arch
+my $arch = `/bin/uname -i`;
+chomp $arch;
+my $lib;
+if ($arch eq 'x86_64') {
+	$lib = 'lib64';
+} else {
+	$lib = 'lib';
+}
+
+# Location of the real check_procs plugin
+my $check = "/usr/$lib/nagios/plugins/check_procs";
+
+# Parse command line opts
+my %ARGS;
+my %OPTIONS;
+my $gop=new Getopt::Long::Parser;
+$gop->configure('no_ignore_case','bundling');
+if (!$gop->getoptions(
+    'args|a=s%'    => \%ARGS,
+    'warning|w=i'  => \$OPTIONS{'warning' }, 
+    'critical|c=i' => \$OPTIONS{'critical'} ) ) 
+{}
+
+# Build args
+my $args='';
+if ($OPTIONS{'warning'}) { $args .= " -w $OPTIONS{'warning'}"; }
+if ($OPTIONS{'critical'}) { $args .= " -c $OPTIONS{'critical'}"; }
+
+# Build the command we want to run, and run it
+my $command="$check$args";
+my $return = `$command`;
+my $error = $?;
+chomp $return;
+
+# Figure out the number of procs, to generate perfdata
+my $procs = $return;
+$procs =~ s/[^0-9]//g;
+
+if (defined $procs) {
+	print "$return | Processes=$procs;$OPTIONS{'warning'};$OPTIONS{'critical'}";
+} else {
+	print "$return";
+}
+
+exit $error;

@@ -1,0 +1,60 @@
+#!/usr/bin/perl -w
+
+use strict;
+use Time::Local;
+use DateTime;
+
+my $warn = $ARGV[0];
+
+if (!defined($warn)) { $warn = 180; }
+
+my $logline = `cat /var/log/puppet/puppet.log | grep puppet-agent | grep "Finished catalog run" | tail -n 1`;
+# Formatted like 
+# Mar 22 11:27:32 espresso puppet-agent[7981]: Finished catalog run in 11.60 seconds
+# Mar  2 11:27:32 espresso puppet-agent[7981]: Finished catalog run in 11.60 seconds
+
+# Error trapping in case there are no successful checkins in the file
+if (length($logline)<10) {
+	print "UNKNOWN: Last Puppet run unknown";
+	exit 3;
+}
+
+# Replace one double space with one single space, in the case of days with single-digit dates
+$logline =~ s/\ \ /\ /;
+my @datefields = split(/[\:\ ]/, $logline);
+my $month = $datefields[0];
+my $day = $datefields[1];
+my $hour = $datefields[2];
+my $minute = $datefields[3];
+my $second = $datefields[4];
+
+my $timenow = time;
+my $dt = DateTime->from_epoch( epoch => $timenow );
+my $year   = $dt->year;
+
+my %mon2num = qw(
+  jan 1  feb 2  mar 3  apr 4  may 5  jun 6
+  jul 7  aug 8  sep 9  oct 10 nov 11 dec 12
+);
+
+my $monthnum = $mon2num{ lc substr($month, 0, 3) } -1;
+my $timecheckin = timelocal($second,$minute,$hour,$day,$monthnum,$year);
+my $diff = int(($timenow-$timecheckin)/60);
+
+# Not actually a date field, but contains the duration
+my $perfdata = "Duration=$datefields[12]s";
+
+
+if ($diff >= $warn) {
+	# Warning
+	print "WARNING: Last Puppet run: $diff minutes ago ($month $day, $hour:$minute:$second) | $perfdata";
+	exit 1;
+} elsif ($diff < $warn) {
+	# OK
+	print "OK: Last Puppet run: $diff minutes ago ($month $day, $hour:$minute:$second) | $perfdata";
+	exit 0;
+} else {
+	# Broken unknown
+	print "UNKNOWN: Last Puppet run unknown";
+	exit 3;
+}

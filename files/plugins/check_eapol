@@ -1,0 +1,64 @@
+#!/usr/bin/perl -w
+
+# USAGE ./check_eapol <ip> <port> <secret>
+
+use strict;
+use lib "/usr/lib/nagios/plugins";
+use lib "/usr/lib64/nagios/plugins";
+use utils qw(%ERRORS);
+use Time::HiRes qw(time);
+
+# Read in our inputs
+my $ip = $ARGV[0];
+my $port = $ARGV[1];
+my $eapol_test = '/usr/sbin/eapol_test';
+my $eapol_conf = '/usr/lib64/nagios/plugins/wpa_supplicant/wpa_supplicant.conf';
+my $secret = $ARGV[2];
+
+my $warn = 10;
+my $crit = 15;
+
+# Make sure we have the right number of parameters
+if (!defined($ip) or !defined($port)) {
+	print 'UNKNOWN - Wrong number of parameters';
+	exit $ERRORS{'UNKNOWN'};
+}
+
+# Do the test, and time it
+my $timestampa = time;
+my $result = `$eapol_test -c $eapol_conf -a $ip -p $port -s $secret | /usr/bin/tail -n 1`;
+my $timestampb = time;
+
+# Calculate the diff and round it to the nearest millisecond
+my $delta = $timestampb - $timestampa;
+$delta = round($delta);
+
+# Print our results out
+if ($result =~ m/SUCCESS/) {
+	if ($delta > $crit) {
+                print "OK - Test auth succeeded, but took ${delta}s | Latency=${delta}s;$warn;$crit";
+                exit $ERRORS{'CRITICAL'};
+	} elsif ($delta > $warn) {
+                print "OK - Test auth succeeded, but took ${delta}s | Latency=${delta}s;$warn;$crit";
+                exit $ERRORS{'WARNING'};
+	} else {
+		print "OK - Test auth succeeded and took ${delta}s | Latency=${delta}s;$warn;$crit";
+		exit $ERRORS{'OK'};
+	}
+} elsif ($result =~ m/FAILURE/) {
+	print "CRITICAL - Test auth failed | Latency=${delta}s;$warn;$crit";
+	exit $ERRORS{'CRITICAL'};
+} else {
+	print "UNKNOWN - Test went wrong | Latency=${delta}s;$warn;$crit";
+	exit $ERRORS{'UNKNOWN'};
+}
+
+# Round to 3 decimal places
+sub round {
+	my $num = shift;
+	$num = $num * 1000;
+	$num = $num + 0.5;
+	$num = int($num);
+	$num = $num / 1000;
+	return $num;
+}

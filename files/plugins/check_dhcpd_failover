@@ -1,0 +1,60 @@
+#! /usr/bin/perl -w
+
+use strict;
+
+my $file = '/var/lib/dhcpd/dhcpd.leases';
+
+if (-f $file) {
+	# continue
+} else {
+	# quit unknown
+	print "UNKNOWN - $file unreadable";
+	exit 3;
+}
+
+my $status = `grep -A 3 failover $file | tail -n 4 | grep ' at '`;
+
+# This returns output like this:
+#  my state normal at 6 2013/07/06 03:02:02;
+#  partner state normal at 3 2011/07/20 11:10:10;
+
+# Split each line of the message into an array
+my @status_array = split(/\n/, $status);
+
+# Make sure we got valid output
+if ($#status_array != 1) {
+	print "UNKNOWN - unexpected output format from $file";
+	exit 3;
+}
+
+# For each line of the array, neaten it up
+for my $i (0 .. $#status_array) {
+	$status_array[$i] =~ s/  //g;                     # Remove double spaces
+        $status_array[$i] =~ s/;//g;                      # Remove semicolons
+	$status_array[$i] =~ s/ at \d / at /;             # Remove pointless digit
+	$status_array[$i] = ucfirst($status_array[$i]);   # Uppercase first digit
+}
+
+# Generate concatenated status message
+my $status_message = "$status_array[0], $status_array[1]";
+
+# Pluck out the status keywords from each server
+my @status_keyword;
+foreach my $j (0, 1) {
+	$status_keyword[$j] = lc((split(/ /,  $status_array[$j]))[2]);
+}
+
+# Check the status keywords to decide on our overall status
+if (($status_keyword[0] eq 'normal') && ($status_keyword[0] eq 'normal')) {
+	# Everything is OK
+	print 'OK - ' . $status_message;
+	exit 0;
+} else {
+	# We have a problem
+	print 'OK - ' . $status_message;
+	exit 1;
+}
+
+# Should never hit this!
+print "UNKNOWN - should never see this message";
+exit 3;

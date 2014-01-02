@@ -1,0 +1,25 @@
+#!/bin/bash
+# Usage: ./check_legato
+# Description:
+#	This plugin determines whether LEGATO networker is
+#	running and the host is listening on the given port.
+
+OK=0
+WARNING=1
+CRITICAL=2
+PATH="/usr/bin:/usr/sbin:/bin:/sbin"
+
+if [ `ps -ef | grep nsrexecd | grep -v grep | wc -l` -lt 1 ]; then
+  echo "LEGATO CRITICAL:  Daemon is NOT running!"
+  exit $CRITICAL
+else
+  PORT="7937"
+  PROTO="tcp"
+  if [ `netstat -ln | grep $PROTO | grep :$PORT | grep -v grep | wc -l` -lt 1 ]; then
+    echo "LEGATO CRITICAL:  Host is NOT listening on port $PORT!"
+    exit $CRITICAL
+  else
+    echo "LEGATO OK:  Daemon is running.  Host is listening."
+    exit $OK
+  fi
+fi

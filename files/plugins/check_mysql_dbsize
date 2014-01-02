@@ -1,0 +1,36 @@
+#!/usr/bin/perl -w
+
+# USAGE ./check_mysql_dbsize
+# Runs only on localhost-  use through nrpe
+
+use strict;
+use DBI;
+use lib "/usr/lib/nagios/plugins";
+use lib "/usr/lib64/nagios/plugins";
+use utils qw(%ERRORS);
+
+####### DATABASE CONNECT INFO #######
+my $host = 'localhost';
+my $database = 'mysql';
+my $user = 'nagios';
+my $password = 'nagios';
+
+my $dsn = "DBI:mysql:database=$database;host=$host";
+my $dbh = DBI->connect($dsn, $user, $password)
+            or die "Couldn't connect to database: " . DBI->errstr;
+
+my $sql = "SELECT round(sum( data_length + index_length ) / 1048576, 1) FROM information_schema.TABLES";
+
+my $sth = $dbh->prepare($sql)
+                 or die "Couldn't prepare statement: " . $dbh->errstr;
+
+$sth->execute();
+my $result = $sth->fetchrow_array();
+
+if ($result) {
+	print "OK - total database size $result MB | Size=${result}MB";
+	exit $ERRORS{'OK'};
+} else {
+	print "UNKNOWN - Test went wrong";
+	exit $ERRORS{'UNKNOWN'};
+}

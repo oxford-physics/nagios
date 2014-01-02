@@ -1,0 +1,24 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+my $mmm_control = '/usr/sbin/mmm_control';
+my $host = $ARGV[0];
+$host =~ s/[^a-z0-9]//gi;
+
+if (-e $mmm_control) {
+	my $return = `$mmm_control show | grep $host`;
+	chomp $return;
+	$return =~ s/  //;
+	if ($return ne '') {
+		print $return;
+		exit 0;
+	} else {
+		print 'Test went wrong';
+		exit 3;
+	}
+} else {
+	# Binary doesn't exist
+	print 'Could not find mmm_control';
+	exit 3;
+}

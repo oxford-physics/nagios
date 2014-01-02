@@ -1,0 +1,28 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+# SELinux binary
+my $selinux = '/usr/sbin/getenforce';
+
+if (-e $selinux) {
+	my $return = `$selinux`;
+	chomp $return;
+	if ($return eq 'Enforcing' || $return eq 'Permissive') {
+		print "OK - SELinux is $return";
+		# OK status
+		exit 0;
+	} elsif ($return eq 'Disabled') {
+		print "Warning - SELinux is $return";
+		# Warning status
+		exit 1;
+	} else {
+		print "Unknown return code from $selinux";
+		# Unknown status
+		exit 3;
+	}
+} else {
+	print "$selinux not found";
+	# Unknown status
+	exit 3;
+}
