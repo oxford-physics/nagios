@@ -2,13 +2,13 @@
 # Some stock plugins lack a NRPE snippet so will need nrpeconfig{}
 # without nagiosplugin{}
 define nagios::config::nrpe ($command, $sudo = undef) {
-  $name = $::osfamily ? {
+  $file_name = $::osfamily ? {
     'RedHat' => "/etc/nrpe.d/${title}.cfg",
     'Debian' => "/etc/nagios/nrpe.d/${title}.cfg",
     default  => "/etc/nrpe.d/${title}.cfg",
   }
 
-  file { $name:
+  file { $file_name:
     alias   => "${title}.cfg",
     content => $sudo ? {
       true    => "command[${title}]=/usr/bin/sudo /usr/${::lib_path}/nagios/plugins/${command}",
