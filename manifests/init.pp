@@ -10,6 +10,11 @@
 #
 # Sample Usage:
 #
-class nagios {
+class nagios ($is_server = false,) {
+  if $is_server == true {
+    class { 'nagios::server': }
+  } else {
+    class { 'nagios::client': }
+  }
 
 }
