@@ -1,0 +1,58 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+# Define our inputs
+my $nagios = '/usr/sbin/nagios';
+my $config = '/etc/nagios/nagios.cfg';
+my $hostname = `hostname`;
+chomp $hostname;
+
+# Make sure Nagios and its config both exist
+foreach ($nagios, $config) {
+	unless (-e $_) {
+		print "Unknown - $_ not found";
+		exit 3;
+	}
+}
+
+my $command = "$nagios -v $config";
+
+# Run the command and grab output
+my @return = `$command`;
+my $returncode = $?;
+
+# Return code 0 means config is OK
+if ($returncode == 0) {
+	# Success
+#	print 'OK - Nagios config valid';
+#	exit 0;
+	&pushNagios(0, 'OK - Nagios config valid');
+} else {
+	# Fail - but what kind?
+	my @error_lines = grep(/^Error/, @return);
+	my @warning_lines = grep(/^Warning/, @return);
+	if (scalar @error_lines > 0) {
+		# Critical
+#		print $error_lines[0];
+#		exit 2;
+		&pushNagios(2, $error_lines[0]);
+	} elsif	(scalar @warning_lines > 0) {
+		# Warning
+#		print $warning_lines[0];
+#		exit 1;
+		&pushNagios(1, $warning_lines[0]);
+	} else {
+		# Unknown
+#		print "Unknown";
+#		exit 3;
+		&pushNagios(3, 'Unknown');
+	}
+}
+
+sub pushNagios {
+        my $status = shift;
+        my $text = shift;
+        $text =~ s/[^0-9a-z-\.\ _]//gi;
+        my $return = `echo "$hostname,Nagios config,$status,$text" | /usr/sbin/send_nsca -d , -H <%= scope.lookupvar("::monitoring_server") %>`;
+}

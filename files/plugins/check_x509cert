@@ -1,0 +1,251 @@
+#!/usr/bin/perl
+# -----------------------------------------------
+
+=head1 NAME
+
+check_x509cert.pl - checking lifetime of x509 certificates
+
+=head1 SYNOPSIS
+
+check_x509cert.pl [-w <min-warn>] [-c <min-crit>] [-v] [-V]
+   [-P <cert-path>]
+  
+check if a local x509 certificate will expire in the next days
+
+=head1 OPTIONS
+
+=over 4
+
+=item -w|--warn=<warn>
+
+Return status "WARN" if enddate < warn (default: 100)
+
+=item -c|--crit=<crit>
+
+Return status "CRITICAL" if enddate < crit (default: 30)
+
+=item -P|--cert-path=<path>[,<path>,...]
+
+comma separated list of directories with certificates to check. The name of
+the certificate must end with ".pem" (default:
+/etc/ipsec.d/{certs,cacerts})
+
+=item -v|--verbose
+
+increases verbosity
+
+=item -V|--version
+
+print version an exit
+
+=item -h|--help
+
+print help message and exit
+
+=cut
+
+# -----------------------------------------------
+
+use strict;
+use warnings;
+
+use Getopt::Long qw(:config no_ignore_case bundling);
+use Pod::Usage;
+use Date::Manip;
+
+use vars qw(%ERRORS);
+
+# -- hard coded error values to avoid path problems with utils.pm
+%ERRORS = (
+   'OK'       => 0,
+   'WARNING'  => 1,
+   'ERROR'    => 2,
+   'CRITICAL' => 2,
+   'UNKNOWN'  => 3,
+);
+
+# -----------------------------------------------
+# global vars
+# -----------------------------------------------
+
+my $ok = 0;
+my $cert_enddate = "";
+my $d_today = ParseDate( "today" );
+
+my $is_crit = 0;
+my $is_warn = 0;
+my $is_ok   = 0;
+
+my $certs_ok   = "";
+my $certs_warn = "";
+my $certs_crit = "";
+
+my $message = "";
+my $return = 127;
+
+# -----------------------------------------------
+# Command line Parameters
+# -----------------------------------------------
+
+# -- Vars
+
+my $warn 	 = 100; #
+my $crit 	 = 30;  #
+my $certpath 	 = "/etc/ipsec.d/certs,/etc/ipsec.d/cacerts";  #
+my $verbose    	 = 0;	#
+my $help	 = 0;	# 
+my $printversion = 0;	#
+
+# -- -- -- -- -- -- -- -- 
+my $version	= '$Revision: 1.1 $ / $Date: 2006/08/19 10:12:03 $ / wob ';
+# -- -- -- -- -- -- -- --
+
+# -- GetOpt
+
+GetOptions(
+   "w|warn=s"		=> \$warn,
+   "c|crit=s"		=> \$crit,
+   "P|cert-path=s"	=> \$certpath,
+   "h|help"		=> \$help,
+   "V|version"		=> \$printversion,
+   "v|verbose+"		=> \$verbose,
+
+   ) or pod2usage({ -exitval => $ERRORS{'UNKNOWN'},
+   		    -verbose => 1,
+   	            -msg     => "\n *** unknown argument found ***" });
+
+# -- help message
+pod2usage(-verbose => 2,
+	  -exitval => $ERRORS{'UNKNOWN'} ,
+	 ) if ( $help );
+
+# -- version
+
+pod2usage(-msg     => "\n$0 -- version: $version\n",
+          -verbose => 0,
+	  -exitval => $ERRORS{'UNKNOWN'} ,
+	 ) if ( $printversion );
+
+
+# --------------------------------------------------------
+# start loop
+# --------------------------------------------------------
+
+my @DIR = split /,/, $certpath;
+   print "certpath: $certpath\n" if ($verbose >1);
+
+# --- loop dir ---
+foreach my $dir ( @DIR ) {
+      print " --- certdir: $dir ---\n" if ($verbose);
+   $ok = opendir(DIR, $dir);
+   if ( ! $ok ) {
+      print "can't read directory $dir: $!\n";
+      exit  $ERRORS{'UNKNOWN'};
+   }
+   my @CERTS = sort grep { /^[^.].*\.pem/i } readdir( DIR );
+
+   # --- loop cert ---
+   foreach my $cert ( @CERTS ) {
+      print "$dir/" if ($verbose > 1);
+      print "$cert: " if ($verbose);
+
+      # -- cert readable?
+      if ( ! -r "$dir/$cert" ) {
+         print "Can't read certificate $dir/$cert\n";
+	 exit  $ERRORS{'UNKNOWN'};
+      }
+      # -- open cert
+      $ok = open ( CERT, "/usr/bin/openssl x509 -noout -enddate -in $dir/$cert |");
+      if (! $ok) {
+         print "can't read certificate $dir/$cert: $!\n";
+	 exit  $ERRORS{'UNKNOWN'};
+      }
+      while (<CERT>) {
+         print $_ if ($verbose > 2);
+         if ( /notAfter=(.*) GMT$/ ) {
+            $cert_enddate = $1;
+            print "[$cert_enddate]" if ($verbose);
+            last;
+         }
+      }
+      my $d_cert  = ParseDate( "$cert_enddate" );
+      print "$d_cert / $d_today\n" if ($verbose > 2);
+
+      my $d = DateCalc($d_today,$d_cert);
+      print " ($d) " if ($verbose > 2);
+
+      my $diff = Delta_Format( $d, 0, "%dt" );
+      my $days = sprintf "%d", $diff;
+      print " : $days " if ($verbose);
+
+      if ( $diff < $crit ) {
+	 $is_crit++;
+	 $certs_crit .= "$cert(${days}d) ";
+      } elsif ( $diff < $warn ) {
+	 $is_warn++;
+	 $certs_warn .= "$cert(${days}d) ";
+      } else {
+	 $is_ok++;
+	 $certs_ok   .= "$cert(${days}d) ";
+      };
+
+      print "\n" if ($verbose);
+
+   } # --- end loop cert
+
+} # -- end loop dir ---
+
+# --------------------------------------------------------
+# print result and exit
+# --------------------------------------------------------
+
+if ( $is_crit ) {
+  $message = "CRITICAL ($is_crit): $certs_crit";
+  if ($is_warn) {
+    $message .= " (warnings ($is_warn): $certs_warn)";
+  }
+  $return = $ERRORS{'CRITICAL'};
+} elsif ( $is_warn ) {
+  $message = "WARNING ($is_warn): $certs_warn";
+  $return = $ERRORS{'WARNING'};
+} else {
+  $message = "OK ($is_ok): $certs_ok";
+  $return = $ERRORS{'OK'};
+}
+
+print "$message\n";
+exit $return;
+
+__END__
+# ===============================================
+
+=head1 AUTHOR
+
+wob (at) swobspace (dot) net
+
+=head1 BUGS
+
+may be
+
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License (and no
+later version).
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+
+=head1 HISTORY
+ 
+$Log: check_x509cert.pl,v $
+Revision 1.1  2006/08/19 10:12:03  wob
+start version
+

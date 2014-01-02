@@ -1,0 +1,53 @@
+#!/usr/bin/perl -w
+
+# USAGE ./check_mysql_conns
+# Runs only on localhost-  use through nrpe
+
+use strict;
+use lib "/usr/lib/nagios/plugins";
+use lib "/usr/lib64/nagios/plugins";
+use utils qw(%ERRORS);
+
+
+# Load threshholds, or accept defaults
+my $warn = $ARGV[2];
+my $crit = $ARGV[3];
+$warn = 50 if (!defined($warn));
+$crit = 100 if (!defined($crit));
+
+
+####### DATABASE CONNECT INFO #######
+my $host = 'localhost';
+my $database = 'mysql';
+my $user = 'nagios';
+my $password = 'nagios';
+
+my $mytop = '/usr/bin/mytop';
+my $conns;
+if (-e $mytop) {
+	my $conns = `$mytop -b -u$user -h$host -p$password -d$database --noheader | grep -v "Cmd Query or State" | wc -l`;
+
+	if ($conns) {
+		$conns--;
+	        print "$conns database connections | Connections=$conns;$warn;$crit";
+	        if ($conns < 0) {
+	                # Unknown
+	                exit $ERRORS{'UNKNOWN'};
+	        } elsif ($conns >= $crit) {
+	                # Critical
+	                exit $ERRORS{'CRITICAL'};
+	        } elsif ($conns >= $warn) {
+	                # Warning
+	                exit $ERRORS{'WARNING'};
+	        } elsif ($conns < $warn) {
+	                # OK
+	                exit $ERRORS{'OK'};
+	        }
+	} else {
+	        print "UNKNOWN - Test went wrong";
+	        exit $ERRORS{'UNKNOWN'};
+	}
+} else {
+	print "UNKNOWN - Can't find mytop";
+	exit $ERRORS{'UNKNOWN'};
+}

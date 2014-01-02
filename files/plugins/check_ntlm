@@ -1,0 +1,46 @@
+#!/usr/bin/perl -w
+
+# USAGE ./check_ntlm <username> <password>
+
+use strict;
+use lib "/usr/lib/nagios/plugins";
+use lib "/usr/lib64/nagios/plugins";
+use utils qw(%ERRORS);
+use Time::HiRes qw(time);
+
+my $username = $ARGV[0];
+my $password = $ARGV[1];
+
+if (defined($username) && defined($password)) {
+	my $timestampa = time;
+	my $command = `/usr/bin/ntlm_auth3 --username=$username --password=$password`;
+	my $timestampb = time;
+
+	chomp $command;
+
+	# Calculate the diff and round it to the nearest millisecond
+	my $delta = $timestampb - $timestampa;
+	$delta = round($delta);
+
+
+	if ($command =~ m/NT_STATUS_OK/) {
+		print "OK - $command | 'NTLM latency'=${delta}s";
+		exit $ERRORS{'OK'};
+	} else {
+		print "CRITICAL - $command | 'NTLM latency'=${delta}s";
+		exit $ERRORS{'CRITICAL'};
+	}
+} else {
+	print 'UNKNOWN - enter a username and password';
+	exit $ERRORS{'UNKNOWN'};
+}
+
+# Round to 3 decimal places
+sub round {
+	my $num = shift;
+	$num = $num * 1000;
+	$num = $num + 0.5;
+	$num = int($num);
+	$num = $num / 1000;
+	return $num;
+}

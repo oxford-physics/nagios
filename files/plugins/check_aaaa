@@ -1,0 +1,22 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+my $hostname = $ARGV[0];
+
+if ($hostname) {
+	my $return = `/usr/bin/host $hostname | /bin/grep 'has IPv6 address' | /usr/bin/wc -l`;
+	if ($return >= 1) {
+		# We have an AAAA record
+		print "OK - AAAA record exists for $hostname";
+		exit 0;
+	} else {
+		# We don't have an AAAA record
+		print "WARNING - no AAAA record exists for $hostname";
+		exit 1;
+	}
+} else {
+	# Need to set a hostname
+	print "UNKNOWN - you need to provide a hostname to check";
+	exit 3;
+}

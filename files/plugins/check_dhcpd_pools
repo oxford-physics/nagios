@@ -1,0 +1,88 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+# Read in warn/crit thresholds or accept sensible defaults
+my $warn = $ARGV[0];
+my $crit = $ARGV[1];
+if (!defined($warn)) { $warn = 80; }
+if (!defined($crit)) { $crit = 90; }
+
+# Initialise warn and crit flags
+my $warnflag = 0;
+my $critflag = 0;
+my $perfdata;
+
+# Get DHCP pool data and split it into lines
+my $input = `/usr/bin/dhcpd-pools -c /etc/dhcp/dhcpd.conf -l /var/lib/dhcpd/dhcpd.leases -L02 | egrep -v "^[a-z0-9\.\-]* +0 "`;
+if ($input eq '') {
+	# The test failed failed. Check SELinux audit.log and don't forget to disable dontaudit filtering,
+	# by using semodule -DB. Also make sure you are running this on a real DHCP server!
+	print "UNKNOWN - test went wrong";
+	exit 3;
+}
+my @pools = split(/\n/, $input);
+my %total;
+my $line_length = 0;
+
+foreach my $line (@pools) {
+	my @split = split(/\s+/, $line);
+#	print "Name: $split[0]  Size: $split[1]  Used: $split[2]  Percent: $split[3]\n";
+
+	# Check to see if this triggers an alert
+	if ($split[3] > $crit) {
+		# Critical
+		$critflag = 1;
+	} elsif ($split[3] > $warn) {
+		# Warning
+		$warnflag = 1;
+	}
+
+	# Append this to perfdata
+	my $percent = sprintf("%02d", $split[3]);
+	$perfdata .= " $split[0]=$percent%;$warn;$crit";
+
+        $line_length ++;
+        $perfdata .= "\nline_split1 | " unless ($line_length % 20);
+
+	# Add the size/total to the summary pool data
+	$split[0] =~ m/(.*)-\d+$/;
+	$total{$1}{'size'}  += $split[1];
+	$total{$1}{'used'} += $split[2];
+}
+
+# Add the totalled perfdata for % and absolute - TODO
+$line_length = 0;
+foreach my $key (keys %total)
+	{
+	my $percent = int(($total{$key}{'used'}/$total{$key}{'size'})*100);
+	# $perfdata .= " $key-average=$percent%;$warn;$crit";
+
+	my $totalwarn = int($warn*$total{$key}{'size'}/100);
+	my $totalcrit = int($crit*$total{$key}{'size'}/100);
+
+        $line_length ++;
+        $perfdata .= "\nline_split2 | " unless ($line_length % 20);
+
+	$perfdata .= " $key-totals=$total{$key}{'used'};$totalwarn;$totalcrit;0;$total{$key}{'size'}";
+	}
+
+# See what status we should output
+my $status;
+if ($critflag) {
+	$status = "CRITICAL - one or more pools more than $crit% full";
+	print "$status|$perfdata";
+	exit 2;
+} elsif ($warnflag) {
+	$status = "WARNING - one or more pools more than $warn% full";
+	print "$status|$perfdata";
+	exit 1;
+} else {
+	$status = "OK - all pools less than $warn% full";
+	print "$status|$perfdata";
+	exit 0;
+}
+
+# Shouldn't ever hit this line, but if we do, something is b0rked
+print "UNKNOWN - something is b0rked!";
+exit 3;

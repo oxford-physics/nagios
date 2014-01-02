@@ -1,0 +1,64 @@
+#!/usr/bin/perl
+
+# MYSQL QPS Monitoring Script
+# By Brendon Baumgartner <brendon@brendon.com>
+# (c) 2005 (GNU GPL)
+
+use strict;
+use warnings;
+use DBI;
+use lib "/usr/lib/nagios/plugins";
+use lib "/usr/lib64/nagios/plugins";
+use utils qw(%ERRORS);
+
+my $filename = "/tmp/.mysql-qps.dat";
+my ($ptime, $pquestions) = &getPrevious;
+
+my $dsn = "DBI:mysql:database=mysql;host=localhost";
+my $dbh = DBI->connect($dsn, 'nagios','nagios')
+            or die "Couldn't connect to database: " . DBI->errstr;
+
+my $sth = $dbh->prepare('SHOW STATUS LIKE "Queries"')
+                 or die "Couldn't prepare statement: " . $dbh->errstr;
+
+$sth->execute();
+my @q = $sth->fetchrow_array();
+my $cquestions = $q[1];
+my $ctime = time;
+&putCurrent($ctime, $cquestions);
+
+my $final =  ($cquestions - $pquestions) / ($ctime - $ptime);
+#print $final . "\n";
+
+
+if (($final) && ($final >= 0)) {
+	$final = round($final);
+        print "OK - $final queries per second | Queries=$final";
+        exit $ERRORS{'OK'};
+} else {
+        print "UNKNOWN - Test went wrong";
+        exit $ERRORS{'UNKNOWN'};
+}
+
+
+sub putCurrent() {
+	my $time = shift @_;
+	my $questions = shift @_;
+	open(OUT, "> $filename");
+	print  OUT $time . " " . $questions . "\n";
+	close OUT;
+}
+
+sub getPrevious() {
+	open IN, $filename  or print "no prev file\n" ;
+	local $/ = " ";      # read based on spaces, not \n
+	my @data = <IN>;
+	close IN ;
+	return @data;
+}
+
+sub round {
+	my($number) = shift;
+	return int($number *100 + .5)/100;
+}
+

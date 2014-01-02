@@ -1,0 +1,31 @@
+#!/usr/bin/perl -w
+
+# This plugin acts a wrapper around NRPE which gzips the data to be transmitted
+# and base64encs it as NRPE can only transmit ASCII. This plugin is for the
+# Nagios SERVER
+
+use strict;
+
+# Path to bona fide NRPE plugin
+my $check_nrpe = '/usr/lib64/nagios/plugins/check_nrpe';
+my $gunzip = '/bin/gunzip';
+my $base64 = '/usr/bin/base64';
+
+# Read all the arguments that are supplied to the check_nrpe plugin
+my $args;
+for my $i (0 .. $#ARGV) {
+	$args .= ' ';
+	$args .= $ARGV[$i];
+}
+
+# Pass through all the args to the real NRPE, and grab the reply
+# which we expect to be gzipped & base64 encoded
+my $return_message = `$check_nrpe$args`;
+my $return_code = $?;
+
+# Decode and unzip the returned data
+my $data = `echo "$return_message" | $base64 -d | $gunzip -`;
+
+# Print our data out to Nagios and exit with the return code that we were sent
+print $data;
+exit $return_code;

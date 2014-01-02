@@ -1,0 +1,28 @@
+#!/usr/bin/perl -w
+
+# Usage:   check_ads [domain]
+
+use strict;
+use lib "/usr/lib/nagios/plugins";
+use lib "/usr/lib64/nagios/plugins";
+use utils qw(%ERRORS);
+
+my $wbinfo = '/usr/bin/wbinfo';
+if (-e $wbinfo) {
+	my $domain = `$wbinfo --own-domain`;
+	chomp $domain;
+	if ($domain eq '(null)') {
+		print "No domain\n";
+		exit $ERRORS{'WARNING'};
+	} else {
+		print "Domain is $domain\n";
+		exit $ERRORS{'OK'};
+	}
+} else {
+	print "wbinfo not found\n";
+	exit $ERRORS{'UNKNOWN'};
+}
+
+# We should never get here. If we did, something is broken
+print "Unknown\n";
+exit $ERRORS{'UNKNOWN'};

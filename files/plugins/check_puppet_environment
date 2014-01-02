@@ -1,0 +1,32 @@
+#!/usr/bin/perl -wT
+
+use strict;
+
+# Path to puppet.conf
+my $puppetconf = '/etc/puppet/puppet.conf';
+
+# Nagios return codes
+my %returncode;
+$returncode{'0'} = 'OK';
+$returncode{'1'} = 'WARNING';
+$returncode{'2'} = 'CRITICAL';
+$returncode{'3'} = 'UNKNOWN';
+
+# Open puppet.conf and read to array
+open(my $fh, "<", $puppetconf) or die "Cannot open $puppetconf";
+my @array = <$fh>;
+close $fh;
+
+# Find the environment line and parse it
+my @filteredarray = grep(/^\s*environment\s*=/, @array);
+if (scalar(@filteredarray) != 1) {
+	print "Unable to determine Puppet environment";
+	exit 3;
+}
+my $envline = $filteredarray[0];
+$envline =~ s/\s//g;
+my @words = split(/=/, $envline);
+$words[1] =~ s/[^a-z0-9-_]//gi;
+
+print "Puppet environment is $words[1]";
+exit 0;

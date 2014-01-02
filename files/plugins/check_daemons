@@ -1,0 +1,23 @@
+#!/usr/bin/perl -w
+
+# USAGE ./check_daemons <name>
+
+use strict;
+use lib "/usr/lib/nagios/plugins";
+use lib "/usr/lib64/nagios/plugins";
+use utils qw(%ERRORS);
+
+if (defined $ARGV[0]) {
+	my $daemon = $ARGV[0];
+	my $check = `ps -ef | grep "$daemon" | grep -v grep | wc -l`;
+	if ($check>1) {
+	        print "OK - $daemon is running\n";
+	        exit $ERRORS{'OK'};
+	} else {
+	        print "CRITICAL - $daemon is not running\n";
+	        exit $ERRORS{'CRITICAL'};
+	}
+} else {
+	print "UNKNOWN - must specify daemon";
+	exit $ERRORS{'UNKNOWN'};
+}
