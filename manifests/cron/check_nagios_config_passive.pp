@@ -1,3 +1,4 @@
+# Passive Nagios test for Nagios config
 class nagios::cron::check_nagios_config_passive {
   cron { 'check_nagios_config_passive_hourly':
     ensure      => present,
@@ -8,6 +9,6 @@ class nagios::cron::check_nagios_config_passive {
     minute      => 0,
     month       => '*',
     weekday     => '*',
-    require => File['check_nagios_config_passive'],
+    require     => File['check_nagios_config_passive'],
   }
 }

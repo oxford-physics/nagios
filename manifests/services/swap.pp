@@ -1,3 +1,4 @@
+# Check for available swap space
 class nagios::services::swap {
   @@nagios_service { "check_swap_${::fqdn}":
     check_command       => 'check_nrpe!check_swap',
@@ -8,11 +9,11 @@ class nagios::services::swap {
   }
 
   @@nagios_servicedependency { "check_swap_${::fqdn}":
-    host_name => $::fqdn,
+    host_name                     => $::fqdn,
     dependent_host_name           => $::fqdn,
     dependent_service_description => 'Swap',
     service_description           => 'NRPE',
     notification_failure_criteria => 'w,u,c',
-    tag       => $::domain,
+    tag                           => $::domain,
   }
 }

@@ -10,7 +10,9 @@
 #
 # Sample Usage:
 #
-class nagios ($is_server = false,) {
+class nagios (
+  $allowed_hosts = ['127.0.0.1'],
+  $is_server     = false,) {
   if $is_server == true {
     class { 'nagios::server': }
   } else {

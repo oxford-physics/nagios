@@ -1,4 +1,7 @@
+# Summary of all monitoring services on the server side
 class nagios::services::server {
-  include nagios::services::client
-  include nagios::services::nagios
+  # A server is also a client
+  class { 'nagios::services::client': }
+
+  class { 'nagios::services::nagios': }
 }
