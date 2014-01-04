@@ -9,7 +9,9 @@ describe 'nagios' do
   	:processorcount => 1, 
   	:osfamily => 'RedHat', 
   	:operatingsystem => 'Redhat',
-  	:operatingsystemrelease => '6.4'} }
+  	:operatingsystemrelease => '6.4',
+  	:concat_basedir         => '/dne', 
+  	} }
   
   describe 'Test standard installation on RedHat (client)' do
     it { should contain_package('nagios-plugins').with_ensure('installed') }
