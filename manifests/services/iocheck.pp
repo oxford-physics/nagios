@@ -11,12 +11,12 @@ define nagios::services::iocheck {
     }
 
     @@nagios_servicedependency { "check_iostat_${::fqdn}_${name}":
-      host_name => $::fqdn,
+      host_name                     => $::fqdn,
       dependent_host_name           => $::fqdn,
       dependent_service_description => "I/O ${name}",
       service_description           => 'NRPE',
       notification_failure_criteria => 'w,u,c',
-      tag       => $::domain,
+      tag                           => $::domain,
     }
   }
 }

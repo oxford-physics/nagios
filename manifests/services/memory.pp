@@ -1,3 +1,4 @@
+# Monitoring of RAM
 class nagios::services::memory{
   @@nagios_service { "check_memory_${::fqdn}":
     check_command       => 'check_nrpe!check_memory',
@@ -9,11 +10,11 @@ class nagios::services::memory{
   }
 
   @@nagios_servicedependency { "check_memory_${::fqdn}":
-    host_name => $::fqdn,
+    host_name                     => $::fqdn,
     dependent_host_name           => $::fqdn,
     dependent_service_description => 'Memory',
     service_description           => 'NRPE',
     notification_failure_criteria => 'w,u,c',
-    tag       => $::domain,
+    tag                           => $::domain,
   }
 }

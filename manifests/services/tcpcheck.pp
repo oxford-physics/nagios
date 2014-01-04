@@ -12,12 +12,12 @@ define nagios::services::tcpcheck {
     }
 
     @@nagios_servicedependency { "check_tcptraffic_${::fqdn}_${name}":
-      host_name => $::fqdn,
+      host_name                     => $::fqdn,
       dependent_host_name           => $::fqdn,
       dependent_service_description => "Network traffic ${name}",
       service_description           => 'NRPE',
       notification_failure_criteria => 'w,u,c',
-      tag       => $::domain,
+      tag                           => $::domain,
     }
   }
 }

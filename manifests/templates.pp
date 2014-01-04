@@ -8,7 +8,7 @@ class nagios::templates {
     host_notification_options     => 'd,u,r,f,s',
     service_notification_commands => 'notify-service-by-email',
     host_notification_commands    => 'notify-host-by-email',
-    register => '0',
+    register                      => '0',
   }
 
   # Host templates

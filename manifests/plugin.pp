@@ -2,7 +2,9 @@
 # All  nagios plugins are installed this way
 # Third-party ones may exist in a yum repo and are installed that way
 #
-# The templated plugins need the global variable 'monitoring_server' set as a fact.
+# The templated plugins need the global variable 'monitoring_server'
+# set as a fact.
+#
 # To see how to set it up for your infrastructure, see
 # http://docs.puppetlabs.com/guides/custom_facts.html
 define nagios::plugin () {
@@ -25,13 +27,13 @@ define nagios::plugin () {
 
   if $is_templated == true {
     $plugin = {
-      "$filename" => {
-        content => template("${module_name}/${title}.erb"),
+      "${filename}" => {
+        content => template("${module_name}/plugins/${title}.erb"),
       }
     }
   } else {
     $plugin = {
-      "$filename" => {
+      "${filename}" => {
         source => "puppet:///modules/nagios/plugins/${title}",
       }
     }
