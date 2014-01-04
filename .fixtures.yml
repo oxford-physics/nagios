@@ -1,6 +1,7 @@
 fixtures:
   repositories:
     "apache": "https://github.com/puppetlabs/puppetlabs-apache.git"
+    "concat": "https://github.com/puppetlabs/puppetlabs-concat.git"
     "stdlib": "https://github.com/puppetlabs/puppetlabs-stdlib"
     "firewall": "https://github.com/puppetlabs/puppetlabs-firewall"
     "grid_repos": "https://github.com/HEP-Puppet/grid_repos"
