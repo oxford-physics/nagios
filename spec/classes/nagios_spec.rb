@@ -4,7 +4,12 @@ describe 'nagios' do
 
   let(:title) { 'nagios' }
   let(:node) { 'testing.phy.bris.ac.uk' }
-  let(:facts) { {:ipaddress => '10.13.37.100', :processorcount => 1, :osfamily => 'RedHat', :operatingsystem => 'Redhat' } }
+  let(:facts) { {
+  	:ipaddress => '10.13.37.100', 
+  	:processorcount => 1, 
+  	:osfamily => 'RedHat', 
+  	:operatingsystem => 'Redhat',
+  	:operatingsystemrelease => 6.4} }
   
   describe 'Test standard installation on RedHat (client)' do
     it { should contain_package('nagios-plugins').with_ensure('installed') }
