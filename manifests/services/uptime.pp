@@ -1,3 +1,4 @@
+# Nagios monitoring for uptime
 class nagios::services::uptime {
   @@nagios_service { "check_uptime_${::fqdn}":
     check_command       => 'check_nrpe!check_uptime',
@@ -9,11 +10,11 @@ class nagios::services::uptime {
   }
 
   @@nagios_servicedependency { "check_uptime_${::fqdn}":
-    host_name => $::fqdn,
+    host_name                     => $::fqdn,
     dependent_host_name           => $::fqdn,
     dependent_service_description => 'Uptime',
     service_description           => 'NRPE',
     notification_failure_criteria => 'w,u,c',
-    tag       => $::domain,
+    tag                           => $::domain,
   }
 }

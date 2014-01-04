@@ -6,7 +6,7 @@ class nagios::config::hostgroups (
   $hostgroups = {
     'default' => {
       alias => 'default-hostgroup',
-      tag   => 'everything',
+      tag   => $::domain,
     }
   }
 ) {

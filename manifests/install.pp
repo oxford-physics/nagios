@@ -1,24 +1,30 @@
-class nagios::install ($is_server = false,) {
+# Installation of packages
+class nagios::install (
+  $is_server = false,) {
   # for both client and server
   include nagios::cron::kernel_passive
   include nagios::plugins::core
 
+  $nrpe_name = $::osfamily ? {
+    'RedHat' => 'nrpe',
+    'Debian' => 'nagios-nrpe-server',
+    default  => 'nrpe',
+  }
+
   package { 'nrpe':
     ensure => installed,
-    name   => $::osfamily ? {
-      'RedHat' => 'nrpe',
-      'Debian' => 'nagios-nrpe-server',
-      default  => 'nrpe',
-    },
+    name   => $nrpe_name,
+  }
+
+  $nsca_client_name = $::osfamily ? {
+    'RedHat' => 'nsca-client',
+    'Debian' => 'nsca',
+    default  => 'nsca-client',
   }
 
   package { 'nsca-client':
     ensure => installed,
-    name   => $::osfamily ? {
-      'RedHat' => 'nsca-client',
-      'Debian' => 'nsca',
-      default  => 'nsca-client',
-    },
+    name   => $nsca_client_name,
   }
 
   package { 'nagios-plugins':
