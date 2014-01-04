@@ -28,7 +28,7 @@ define nagios::plugin () {
   if $is_templated == true {
     $plugin = {
       "${filename}" => {
-        content => template("${module_name}/${title}.erb"),
+        content => template("${module_name}/plugins/${title}.erb"),
       }
     }
   } else {
