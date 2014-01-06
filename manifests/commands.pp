@@ -243,9 +243,10 @@ class nagios::commands {
     command_line => '$USER1$/check_esx_hardware -H $HOSTADDRESS$ -u rnnagios -p TEST -l $ARG1$',
   }
 
-  nagios_command { 'check_puppet_checkin_db':
-    command_line => '$USER1$/check_puppet_checkin_db $HOSTNAME$',
-  }
+# Currently disabled as plugin is needs to be redesigned
+#  nagios_command { 'check_puppet_checkin_db':
+#    command_line => '$USER1$/check_puppet_checkin_db $HOSTNAME$',
+#  }
 
   nagios_command { 'check_nagiostats':
     command_line => '$USER1$/check_nagiostats --EXEC /usr/bin/nagiostats',

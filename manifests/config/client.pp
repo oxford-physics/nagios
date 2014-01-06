@@ -62,6 +62,7 @@ class nagios::config::client (
     mode    => '0755',
     owner   => 'root',
     group   => 'root',
+    content => template('nagios/nrpe.cfg.erb'),
     source  => 'puppet:///modules/nagios/nrpe/nrpe.cfg',
     require => Package['nrpe'],
     notify  => Service['nrpe'],

@@ -18,6 +18,12 @@ describe 'nagios' do
     it { should contain_package('nrpe').with_ensure('installed') }
     it { should contain_service('nrpe').with_ensure('running') }
     it { should contain_service('nrpe').with_enable('true') }
+    it { should contain_file('/etc/nagios/nrpe.cfg').with({
+    	'ensure' => 'present',
+      	'owner'  => 'root',
+      	'group'  => 'root',
+      	'mode'   => '0755',
+      	})
   end
   
   describe 'Test standard installation on RedHat (server)' do
