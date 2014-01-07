@@ -2,9 +2,9 @@
 # Currently only the CAS authentication method is supported
 class nagios::config::vhosts (
   $use_mod_auth_cas = true,
-  $cas_validate_url = undef,
   $cas_login_url    = undef,
-  $cas_users        = [],) {
+  $cas_users        = [],
+  $cas_validate_url = undef,) {
   # since puppetlabs/apache does not support mod_cas, we need to manually create
   # this file
   if $use_mod_auth_cas == true {

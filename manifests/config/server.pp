@@ -23,8 +23,9 @@ class nagios::config::server (
   }
   ,
   $use_mod_auth_cas = true,
-  $cas_validate_url = undef,
-  $cas_login_url    = undef,) {
+  $cas_login_url    = undef,
+  $cas_users        = [],
+  $cas_validate_url = undef,) {
   # A server is also a client
   class { 'nagios::config::client': }
 
@@ -183,6 +184,14 @@ class nagios::config::server (
     mode    => '0644',
     owner   => 'root',
     group   => 'nagios',
+  }
+
+  # create virtual hosts
+  class { 'nagios::config::vhosts':
+    use_mod_auth_cas => $use_mod_auth_cas,
+    cas_validate_url => $cas_validate_url,
+    cas_login_url    => $cas_login_url,
+    cas_users        => $cas_users,
   }
 
 }
