@@ -23,7 +23,7 @@ describe 'nagios' do
       	'owner'  => 'root',
       	'group'  => 'root',
       	'mode'   => '0755',
-      	})
+    })}
   end
   
   describe 'Test standard installation on RedHat (server)' do
