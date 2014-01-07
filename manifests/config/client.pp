@@ -59,10 +59,11 @@ class nagios::config::client (
   #  }
   # Install base nrpe config
   file { '/etc/nagios/nrpe.cfg':
+    ensure  => present,
     mode    => '0755',
     owner   => 'root',
     group   => 'root',
-    source  => 'puppet:///modules/nagios/nrpe/nrpe.cfg',
+    content => template('nagios/nrpe.cfg.erb'),
     require => Package['nrpe'],
     notify  => Service['nrpe'],
   }

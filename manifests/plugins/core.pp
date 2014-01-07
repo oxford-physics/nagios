@@ -170,11 +170,5 @@ class nagios::plugins::core {
   nagios::plugin {'check_kernel_passive':}
 
   # This plugin is not run via NRPE, but actually via cron and NSCA
-  file { "/usr/${::lib_path}/nagios/plugins/check_hardware_spec":
-    source  => 'puppet:///modules/nagios/plugins/check_hardware_spec',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    require => Package['nrpe', 'nagios-plugins'],
-  }
+  nagios::plugin {'check_hardware_spec': }
 }
