@@ -4,17 +4,18 @@ class nagios::services::client {
   $warnload = $::processorcount * 7
   $critload = $::processorcount * 10
 
-  $lib      = $::architecture ? {
+  $lib = $::architecture ? {
     'i386'   => 'lib',
     'x86_64' => 'lib64',
     default  => 'lib',
   }
 
   $nrpe_service_name = $::osfamily ? {
-      'RedHat' => 'nrpe',
-      'Debian' => 'nagios-nrpe-server',
-      default  => 'nrpe',
-    }
+    'RedHat' => 'nrpe',
+    'Debian' => 'nagios-nrpe-server',
+    default  => 'nrpe',
+  }
+
   # Start the monitoring services
   service { 'nrpe':
     ensure     => running,
@@ -45,8 +46,6 @@ class nagios::services::client {
   include nagios::services::memory
   # ### UPTIME
   include nagios::services::uptime
-  # ### SELINUX
-  include nagios::services::selinux
   # ### NRPE
   include nagios::services::nrpe
   # ### AAAA RECORD

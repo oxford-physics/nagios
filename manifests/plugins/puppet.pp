@@ -8,13 +8,6 @@ class nagios::plugins::puppet {
     require => Package['perl-DateTime'],
   }
 
-  # check_puppet_checkin_db
-  nagios::plugin { 'check_puppet_checkin_db': }
-
-  nagios::config::nrpe { 'check_puppet_checkin_db':
-    command => 'check_puppet_checkin_db',
-  }
-
   # check_puppetmaster
   nagios::config::nrpe { 'check_puppetmaster':
     command => 'check_daemons puppet\ master',
