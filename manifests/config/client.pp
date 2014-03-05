@@ -50,24 +50,26 @@ class nagios::config::client (
     tag             => $::domain,
   }
 
-  # Install SELinux NRPE policy
-  #  if $::osfamily == 'RedHat' {
-  #    selinux::module { 'resnet-nrpe':
-  #      ensure => 'present',
-  #      source => 'puppet:///modules/nagios/nrpe/resnet-nrpe.te',
-  #    }
-  #  }
   # Install base nrpe config
   file { '/etc/nagios/nrpe.cfg':
-    mode    => '0755',
-    owner   => 'root',
-    group   => 'root',
-    source  => 'puppet:///modules/nagios/nrpe/nrpe.cfg',
+    ensure  => present,
+    mode    => '0644',
+    owner   => 'nrpe',
+    group   => 'nrpe',
+    content => template('nagios/nrpe.cfg.erb'),
     require => Package['nrpe'],
     notify  => Service['nrpe'],
   }
 
-  # Install supplementary nrpe config
+  # install base send_nsca.cfg
+  file {'/etc/nagios/send_nsca.cfg':
+    ensure => present,
+    mode    => '0644',
+    owner   => 'root',
+    group   => 'root',
+    source => 'puppet:///modules/nagios/send_nsca.cfg',
+    require => Package['nsca-client'],
+  }
 
   # Add a symlink for the different path on ubuntu
   if $::osfamily == 'Debian' {
@@ -100,13 +102,16 @@ class nagios::config::client (
     require => Package['nrpe'],
   }
 
+  # Add a VIRTUAL nagios user (should be created by nagios package)
+  @user { 'nagios':
+    ensure  => present,
+    require => Package['nagios-plugins-all'],
+  }
+
   # Then realize that virtual user with collection syntax
   User <| title == 'nrpe' |>
 
   # Elsewhere add to the parameters for that virtual resource using plusignment
-  User <| title == 'nrpe' |> {
-    groups +> 'sudoers'
-  }
   User <| title == 'nrpe' |> {
     groups +> 'puppet'
   }

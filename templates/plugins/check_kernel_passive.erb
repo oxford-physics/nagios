@@ -8,12 +8,26 @@ use strict;
 my $running_kernel=`uname -r`;
 chomp $running_kernel;
 
-my $dpkg = `which dpkg`;
+<% if scope.lookupvar('::osfamily') == 'RedHat' -%>
+my $rpm = `which rpm`;
+<% else -%>
+my $pkg_manager = `which dpkg`;
+<% end -%>
 
 my $hostname = `hostname -f`;
-$hostname =~ s/\.?$//;	# nuke the trailing "." on the end of the fqdn (if it's there)
 chomp $hostname;
+$hostname =~ s/\.?$//;	# nuke the trailing "." on the end of the fqdn (if it's there)
 
+<% if scope.lookupvar('::osfamily') == 'RedHat' -%>
+if ($rpm =~ m/no rpm in/i) {
+	my $text = "UNKNOWN - You must be running an RPM-based system";
+	my $status = 3;
+	&pushNagios($status, $text);
+	exit;
+}
+
+my $installed_kernel=`rpm -q kernel | tail -n 1`;
+<% else %>
 if ($dpkg =~ m/no dpkg in/i) {
 	my $text = "UNKNOWN - You must be running a DEB-based system";
 	my $status = 3;
@@ -22,6 +36,7 @@ if ($dpkg =~ m/no dpkg in/i) {
 }
 
 my $installed_kernel=`dpkg --list | grep linux-image | tail -n 1 | cut -d ' ' -f 3`;
+<% end %>
 chomp $installed_kernel;
 
 if (!defined $running_kernel || !defined $installed_kernel) {
@@ -31,8 +46,13 @@ if (!defined $running_kernel || !defined $installed_kernel) {
         exit;
 }
 
+<% if scope.lookupvar('::osfamily') == 'RedHat' -%>
+# Strip off the "kernel-" prefix so the strings will match
+$installed_kernel =~ s/kernel-//gi;
+<% else %>
 # Strip off the "linux-image-" prefix so the strings will match
 $installed_kernel =~ s/linux-image-//gi;
+<% end %>
 
 # Do the test
 if ($running_kernel eq $installed_kernel) {
@@ -51,5 +71,6 @@ sub pushNagios {
 	my $status = shift;
 	my $text = shift;
 	$text =~ s/[^0-9a-z-\.\ _]//gi;
-	my $return = `echo "$hostname,Kernel,$status,$text" | /usr/sbin/send_nsca -d , -H <%= scope.lookupvar("::monitoring_server") %>`;
+	my $return = `echo "$hostname,Kernel,$status,$text" | /usr/sbin/send_nsca -d , -H <%= @nagios_server %>`;
 }
+
