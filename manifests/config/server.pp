@@ -26,7 +26,8 @@ class nagios::config::server (
   $use_mod_auth_cas = true,
   $cas_login_url    = undef,
   $cas_users        = [],
-  $cas_validate_url = undef,) {
+  $cas_validate_url = undef,
+  $enable_firewall  = true, ) {
 
   include nagios::commands
   include nagios::plugins::all
@@ -113,6 +114,8 @@ class nagios::config::server (
   nagios::icon { 'Debian': }
 
   nagios::icon { 'Scientific': }
+  
+  if $enable_firewall {
 
   # Auto-add a firewall rule in the NRPE clients just for us
   @@firewall { "100-nrpe-${::fqdn}":
@@ -135,6 +138,8 @@ class nagios::config::server (
   # Firewall rules for NSCA
   # Automatically grant NSCA access to any managed host
   Firewall <<| tag == 'nsca' |>>
+
+  }
 
   # collect resources and populate /etc/nagios/nagios_*.cfg
   Nagios_host <<| |>> {
@@ -193,10 +198,16 @@ class nagios::config::server (
   }
 
   # create virtual hosts
+  if $use_mod_auth_cas {
   class { 'nagios::config::vhosts':
     use_mod_auth_cas => $use_mod_auth_cas,
     cas_validate_url => $cas_validate_url,
     cas_login_url    => $cas_login_url,
     cas_users        => $cas_users,
   }
+  } else { 
+  class { 'nagios::config::sslvhosts' :
+
+  }
+ }
 }

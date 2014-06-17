@@ -38,7 +38,7 @@ class nagios::install (
     package { [
       'nagios-plugins-all',
       'nagios-plugins-perl',
-      'nagios-plugins-check-tcptraffic',
+#      'nagios-plugins-check-tcptraffic',
       'perl-DateTime']:
       ensure  => $ensure,
       require => Class['grid_repos'],
@@ -69,7 +69,7 @@ class nagios::install (
 
     # Install apache web server and add httpd to the nagios group
     class { 'apache':
-      group => 'nagios',
+#      group => 'nagios',  Commented out becuase apache automatically add group to nagios
     }
 
     # Add PHP support (pnp4nagios & PHP Nagios)

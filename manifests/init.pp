@@ -59,6 +59,7 @@ class nagios (
   $cas_users                = [],
   $cas_validate_url         = undef,
   $ensure                   = installed,
+  $enable_firewall          = true,
   $nagios_server            = $::fqdn,) {
   if $is_server == true {
     class { 'nagios::install':
@@ -75,11 +76,12 @@ class nagios (
       cas_login_url    => $cas_login_url,
       cas_users        => $cas_users,
       cas_validate_url => $cas_validate_url,
+      enable_firewall  => $enable_firewall,
     }
+     
 
     # A server is also a client
-    class { 'nagios::services::client':
-    }
+    class { 'nagios::services::client': }
 
     # add nagios checks
     class { 'nagios::services::nagios':
@@ -110,7 +112,9 @@ class nagios (
   } else {
     class { 'nagios::install': ensure => $ensure, }
 
-    class { 'nagios::config::client': allowed_hosts => $allowed_hosts, }
+    class { 'nagios::config::client': 
+      allowed_hosts    => $allowed_hosts,
+      enable_firewall  => $enable_firewall, }
 
     class { 'nagios::services::client': }
 

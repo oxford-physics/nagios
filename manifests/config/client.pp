@@ -1,7 +1,8 @@
 # Configuration for Nagios client
 class nagios::config::client (
   $allowed_hosts = ['127.0.0.1'],
-  $hostgroups    = undef,) {
+  $hostgroups    = undef,
+  $enable_firewall  = true, ) {
   if $hostgroups == undef {
     # try and guess the correct group
     $local_hostgroups = $::hostname ? {
@@ -79,6 +80,7 @@ class nagios::config::client (
     }
   }
 
+  if $enable_firewall {
   # Auto-add a NSCA firewall rule on the monitor server just for us
   @@firewall { "200-nsca-${::fqdn}":
     proto  => 'tcp',
@@ -96,6 +98,10 @@ class nagios::config::client (
     action   => 'accept',
   }
 
+   # Add firewall rule to allow NRPE from the monitoring server
+   Firewall <<| tag == 'nrpe' |>> 
+
+  }
   # Add a VIRTUAL nrpe user
   @user { 'nrpe':
     ensure  => present,
@@ -116,6 +122,4 @@ class nagios::config::client (
     groups +> 'puppet'
   }
 
-  # Add firewall rule to allow NRPE from the monitoring server
-  Firewall <<| tag == 'nrpe' |>>
 }

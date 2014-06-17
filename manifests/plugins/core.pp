@@ -118,8 +118,8 @@ class nagios::plugins::core (
 
   nagios::config::nrpe { 'check_mailq': command => 'check_mailq -w 5 -c 10', }
 
-  $interfaces_array = split($::interfaces, ',')
-  nagios::plugins::tcp_traffic { [$interfaces_array]: }
+#  $interfaces_array = split($::interfaces, ',')
+#  nagios::plugins::tcp_traffic { [$interfaces_array]: }
 
   nagios::config::nrpe { 'check_linux_bonding':
     command => 'check_linux_bonding',
