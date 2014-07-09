@@ -7,6 +7,7 @@ class nagios::services::yum {
     service_description   => 'Yum updates',
     use                   => 'hourly-service',
     notifications_enabled => '0',
+    target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                   => $::domain,
   }
 

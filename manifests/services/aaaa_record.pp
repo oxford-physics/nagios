@@ -7,6 +7,7 @@ class nagios::services::aaaa_record {
       host_name           => $::fqdn,
       service_description => 'AAAA record',
       use                 => 'hourly-service',
+      target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
       tag                 => $::domain,
     }
   }

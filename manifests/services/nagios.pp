@@ -9,6 +9,7 @@ class nagios::services::nagios {
     host_name           => $::fqdn,
     service_description => 'Nagios',
     use                 => '5min-service',
+    target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                 => $::domain,
   }
 
@@ -18,6 +19,7 @@ class nagios::services::nagios {
     host_name           => $::fqdn,
     service_description => 'Nagios stats',
     use                 => '5min-service',
+    target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                 => $::domain,
   }
 
@@ -43,6 +45,7 @@ class nagios::services::nagios {
     check_freshness       => 1,
     freshness_threshold   => 172800,
     check_command         => $check_dummy,
+    target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                   => $::domain,
   }
 }

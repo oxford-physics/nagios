@@ -5,6 +5,7 @@ class nagios::services::swap {
     host_name           => $::fqdn,
     service_description => 'Swap',
     use                 => '5min-service',
+    target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                 => $::domain,
   }
 

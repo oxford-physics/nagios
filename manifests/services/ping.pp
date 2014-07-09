@@ -5,6 +5,7 @@ class nagios::services::ping {
     host_name           => $::fqdn,
     service_description => 'Ping',
     use                 => '1min-service',
+    target		=> "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                 => $::domain,
   }
 

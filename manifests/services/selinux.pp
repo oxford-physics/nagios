@@ -6,6 +6,7 @@ class nagios::services::selinux {
     service_description => 'SELinux',
     use                 => 'hourly-service',
     servicegroups       => 'selinux',
+    target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                 => $::domain,
   }
 

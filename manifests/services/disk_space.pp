@@ -5,6 +5,7 @@ class nagios::services::disk_space {
     host_name           => $::fqdn,
     service_description => 'Disk space',
     use                 => 'hourly-service',
+    target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                 => $::domain,
   }
 

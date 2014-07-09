@@ -6,6 +6,7 @@ class nagios::services::cpu {
     service_description => 'CPU usage',
     use                 => '3min-service',
     servicegroups       => 'cpu',
+    target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                 => $::domain,
   }
 

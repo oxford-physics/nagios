@@ -7,6 +7,7 @@ define nagios::services::iocheck {
       host_name           => $::fqdn,
       service_description => "I/O ${name}",
       use                 => '5min-service',
+      target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
       tag                 => $::domain,
     }
 

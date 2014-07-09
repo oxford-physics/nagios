@@ -5,6 +5,7 @@ class nagios::services::zombies {
     host_name           => $::fqdn,
     service_description => 'Zombie procs',
     use                 => '5min-service',
+    target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                 => $::domain,
   }
 

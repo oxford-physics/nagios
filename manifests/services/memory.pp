@@ -6,6 +6,7 @@ class nagios::services::memory{
     service_description => 'Memory',
     use                 => '3min-service',
     servicegroups       => 'memory',
+    target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                 => $::domain,
   }
 

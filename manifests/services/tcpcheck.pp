@@ -8,6 +8,7 @@ define nagios::services::tcpcheck {
       service_description => "Network traffic ${name}",
       use                 => '5min-service',
       servicegroups       => 'network',
+      target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
       tag                 => $::domain,
     }
 

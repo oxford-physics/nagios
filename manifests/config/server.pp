@@ -33,6 +33,7 @@ class nagios::config::server (
   include nagios::plugins::all
   include nagios::plugins::server
   include nagios::templates
+  include nagios::fixes
   # A server is also a client
   class { 'nagios::config::client': allowed_hosts => $allowed_hosts, }
 
@@ -66,6 +67,15 @@ class nagios::config::server (
   }
 
   # NSCA config
+  file { '/etc/nagios/nagios_services.d':
+    ensure  => directory,
+    mode    => '0755',
+    owner   => 'root',
+    group   => 'nagios',
+    require => Package['nagios'],
+  }
+
+
   file { '/etc/nagios/nsca.cfg':
     alias   => 'nsca.cfg',
     mode    => '0600',

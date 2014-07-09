@@ -6,6 +6,7 @@ class nagios::services::load {
     service_description => 'Load',
     use                 => '3min-service',
     servicegroups       => 'load',
+    target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                 => $::domain,
   }
 

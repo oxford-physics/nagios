@@ -6,6 +6,7 @@ class nagios::services::uptime {
     service_description => 'Uptime',
     use                 => 'hourly-service',
     servicegroups       => 'uptime',
+    target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                 => $::domain,
   }
 
