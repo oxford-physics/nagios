@@ -43,7 +43,7 @@ class nagios::services::client {
   # yum
   include nagios::services::yum
   # ### MEMORY
-  include nagios::services::memory
+ # include nagios::services::memory
   # ### UPTIME
   include nagios::services::uptime
   # ### NRPE
@@ -54,9 +54,9 @@ class nagios::services::client {
   include nagios::services::cpu
 
   # Now add the check for each individual interface on this machine
-  $interfaces_array = split($::interfaces, ',')
+#  $interfaces_array = split($::interfaces, ',')
 
-  nagios::services::tcpcheck { [$interfaces_array]: }
+#  nagios::services::tcpcheck { [$interfaces_array]: }
 
   # Now add the check for each individual disk on this machine
   $disks_array = split($::disks, ',')
