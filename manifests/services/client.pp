@@ -53,6 +53,9 @@ class nagios::services::client {
   # ### CPU
   include nagios::services::cpu
 
+  # ### Puppet client
+  include nagios::services::puppet  
+
   # Now add the check for each individual interface on this machine
 #  $interfaces_array = split($::interfaces, ',')
 
