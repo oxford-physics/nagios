@@ -89,7 +89,7 @@ class nagios::plugins::core (
   }
 
   nagios::config::nrpe { 'check_disk_all':
-    command => 'check_disk -l -x /dev/shm -w 10% -c 5%',
+    command => 'check_disk -l -X fuse -x /dev/shm -w 10% -c 5%',
   }
 
   nagios::config::nrpe { 'check_smtp':
@@ -136,4 +136,7 @@ class nagios::plugins::core (
 
   # This plugin is not run via NRPE, but actually via cron and NSCA
   nagios::plugin {'check_kernel_passive':}
+  
+  include nagios::plugins::puppet
+
 }
