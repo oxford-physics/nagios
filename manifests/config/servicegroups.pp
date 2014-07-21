@@ -66,6 +66,11 @@ class nagios::config::servicegroups (
     alias => 'SELinux',
     tag   => $servicegroup_tag,
   }
+  
+   nagios_servicegroup { 'cvmfs':
+    alias => 'CVMFS',
+    tag   => $servicegroup_tag,
+  }
 
   # create additional service groups
   create_resources('nagios_servicegroup', $additional_servicegroups)
