@@ -86,7 +86,10 @@ class nagios (
     # add nagios checks
     class { 'nagios::services::nagios':
     }
-
+    
+    # Add fix
+    include nagios::fixes    
+   
     # Start the Nagios service, and make it restart if there have been changes
     # to
     # the config
@@ -108,7 +111,7 @@ class nagios (
     }
 
     Class['nagios::install'] -> Class['nagios::config::server'] ->
-    Service['nagios'] -> Service['nsca']
+    Service['nagios'] -> Class['nagios::fixes'] ->  Service['nsca']
   } else {
     class { 'nagios::install': ensure => $ensure, }
 

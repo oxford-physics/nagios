@@ -33,7 +33,6 @@ class nagios::config::server (
   include nagios::plugins::all
   include nagios::plugins::server
   include nagios::templates
-  include nagios::fixes
   # A server is also a client
   class { 'nagios::config::client': allowed_hosts => $allowed_hosts, }
 
