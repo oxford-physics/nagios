@@ -80,4 +80,11 @@ class nagios::templates {
     register              => '0',
     normal_check_interval => '5',
   }
+  
+  @@nagios_service { '30min-service':
+    use                   => 'generic-service',
+    register              => '0',
+    normal_check_interval => '30',
+  }
+
 }
