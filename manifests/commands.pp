@@ -8,7 +8,7 @@ class nagios::commands {
   $host_subject = '"** $NOTIFICATIONTYPE$ Host Alert: $HOSTNAME$ is $HOSTSTATE$ **"'
   $host_sendmail = "/bin/mail -s ${host_subject}"
   nagios_command { 'notify-host-by-email':
-    command_line => "/usr/bin/printf \"%b\" \"${host_email}\" | ${host_sendmail}",
+    command_line => "/usr/bin/printf \"%b\" \"${host_email}\" | ${host_sendmail} \$CONTACTEMAIL\$ ",
   }
 
   $service_email = '***** Nagios *****\n\nNotification Type: $NOTIFICATIONTYPE$\n\nService: $SERVICEDESC$\nHost: $HOSTALIAS$\nAddress: $HOSTADDRESS$\nState: $SERVICESTATE$\n\nDate/Time: $LONGDATETIME$\n\nAdditional Info:\n\n$SERVICEOUTPUT$'
@@ -16,7 +16,7 @@ class nagios::commands {
   $service_sendmail = "/bin/mail -s ${service_subject}"
 
   nagios_command { 'notify-service-by-email':
-    command_line => "/usr/bin/printf \"%b\" \"${service_email}\" | ${service_sendmail}",
+    command_line => "/usr/bin/printf \"%b\" \"${service_email}\" | ${service_sendmail} \$CONTACTEMAIL\$ ",
   }
 
   nagios_command { 'check-host-alive':
