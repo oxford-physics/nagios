@@ -71,6 +71,11 @@ class nagios::config::servicegroups (
     alias => 'CVMFS',
     tag   => $servicegroup_tag,
   }
+   nagios_servicegroup { 'hardware':
+    alias => 'hardware',
+    tag   => $servicegroup_tag,
+  }
+
 
   # create additional service groups
   create_resources('nagios_servicegroup', $additional_servicegroups)

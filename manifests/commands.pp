@@ -267,4 +267,9 @@ class nagios::commands {
   nagios_command { 'check_aaaa':
     command_line => '$USER1$/check_aaaa $HOSTNAME$',
   }
+  
+   nagios_command { 'check_hardware':
+    command_line => '$USER1$/check_hardware',
+  }
+
 }
