@@ -4,7 +4,8 @@ class nagios::services::nrpe {
     check_command       => 'check_nrpe_status',
     host_name           => $::fqdn,
     service_description => 'NRPE',
-    use                 => '1min-service',
+    use                 => '3min-service',
+    target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                 => $::domain,
   }
 }

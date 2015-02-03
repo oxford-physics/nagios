@@ -51,7 +51,7 @@ class nagios::services::client {
   # ### AAAA RECORD
   include nagios::services::aaaa_record
   # ### CPU
-  include nagios::services::cpu
+#  include nagios::services::cpu
 
   # ### Puppet client
   include nagios::services::puppet  
