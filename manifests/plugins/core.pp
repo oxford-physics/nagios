@@ -76,16 +76,17 @@ class nagios::plugins::core (
   }
 
   # Load average depends on number of CPU cores
-  $single = $::processorcount
-  $double = $::processorcount * 2
-  $triple = $::processorcount * 3
-  $warnload = "${double},${single},${single}"
-  $critload = "${triple},${double},${double}"
+#  $single = $::processorcount
+#  $double = $::processorcount * 2
+#  $triple = $::processorcount * 3
+#  $warnload = "${double},${single},${single}"
+#  $critload = "${triple},${double},${double}"
 
   # command => "check_load -w $warnload,$warnload,$warnload
   # -c $critload,$critload,$critload",
   nagios::config::nrpe   { 'check_load':
-    command => "check_load -w ${warnload} -c ${critload}",
+#    command => "check_load -w ${warnload} -c ${critload}",
+   command => 'check_load -r -w 1.6, 1.4, 1.2 -c 2, 1.8, 1.5',
   }
 
   nagios::config::nrpe { 'check_disk_all':

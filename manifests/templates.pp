@@ -4,7 +4,7 @@ class nagios::templates {
   @@nagios_contact { 'generic-contact':
     service_notification_period   => '24x7',
     host_notification_period      => '24x7',
-    service_notification_options  => 'w,c,r,f,s',
+    service_notification_options  => 'c,r,f,s',
     host_notification_options     => 'd,u,r,f,s',
     service_notification_commands => 'notify-service-by-email',
     host_notification_commands    => 'notify-host-by-email',
