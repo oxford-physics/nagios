@@ -1,8 +1,8 @@
 # Summary of all monitoring services on the client side
-class nagios::services::client {
+class nagios::services::client inherits nagios::params {
   # First we template a couple of useful values
-  $warnload = $::processorcount * 7
-  $critload = $::processorcount * 10
+#  $warnload = $::processorcount * 7
+#  $critload = $::processorcount * 10
 
   $lib = $::architecture ? {
     'i386'   => 'lib',
@@ -25,36 +25,38 @@ class nagios::services::client {
     hasstatus  => true,
     hasrestart => true,
   }
+ include "nagios::profile::$profile_type"
+
   # Now we define generic nagios checks themselves
   # anything else, eg http, goes in relevant module
-  include nagios::services::ping
+#  include nagios::services::ping
   # ### CURRENT USERS
-  include nagios::services::current_users
+# include nagios::services::current_users
   # ### LOAD
-  include nagios::services::load
+#  include nagios::services::load
   # ### ZOMBIE PROCS
-  include nagios::services::zombies
+#  include nagios::services::zombies
   # ### TOTAL PROCS
-  include nagios::services::total_procs
+#  include nagios::services::total_procs
   # ### SWAP
-  include nagios::services::swap
+#  include nagios::services::swap
   # ### DISK SPACE
-  include nagios::services::disk_space
+#  include nagios::services::disk_space
   # yum
-  include nagios::services::yum
+#  include nagios::services::yum
   # ### MEMORY
  # include nagios::services::memory
   # ### UPTIME
-  include nagios::services::uptime
+#  include nagios::services::uptime
   # ### NRPE
-  include nagios::services::nrpe
+#  include nagios::services::nrpe
   # ### AAAA RECORD
-  include nagios::services::aaaa_record
+#  include nagios::services::aaaa_record
   # ### CPU
 #  include nagios::services::cpu
 
   # ### Puppet client
-  include nagios::services::puppet  
+#  include nagios::services::puppet  
 
   # Now add the check for each individual interface on this machine
 #  $interfaces_array = split($::interfaces, ',')
@@ -62,7 +64,7 @@ class nagios::services::client {
 #  nagios::services::tcpcheck { [$interfaces_array]: }
 
   # Now add the check for each individual disk on this machine
-  $disks_array = split($::disks, ',')
+#  $disks_array = split($::disks, ',')
 
-  nagios::services::iocheck { [$disks_array]: }
+#  nagios::services::iocheck { [$disks_array]: }
 }

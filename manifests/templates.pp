@@ -1,5 +1,5 @@
 # Standard nagios group templates
-class nagios::templates {
+class nagios::templates inherits nagios::params {
   # Contact templates
   @@nagios_contact { 'generic-contact':
     service_notification_period   => '24x7',
@@ -9,6 +9,7 @@ class nagios::templates {
     service_notification_commands => 'notify-service-by-email',
     host_notification_commands    => 'notify-host-by-email',
     register                      => '0',
+    tag                           => $nagios_server,
   }
 
   # Host templates
@@ -29,6 +30,7 @@ class nagios::templates {
     check_command                => 'check-host-alive',
     notification_interval        => '0',
     notification_options         => 'd,r',
+    tag                          => $nagios_server,
   }
 
   # Service templates
@@ -55,36 +57,42 @@ class nagios::templates {
     notification_interval        => '0',
     notification_period          => '24x7',
     register                     => '0',
+    tag                          => $nagios_server,
   }
 
   @@nagios_service { 'hourly-service':
     use                   => 'generic-service',
     register              => '0',
     normal_check_interval => '60',
+    tag                   => $nagios_server,
   }
 
   @@nagios_service { '1min-service':
     use                   => 'generic-service',
     register              => '0',
     normal_check_interval => '1',
+    tag                   => $nagios_server,
   }
 
   @@nagios_service { '3min-service':
     use                   => 'generic-service',
     register              => '0',
     normal_check_interval => '3',
+    tag                   => $nagios_server,
   }
 
   @@nagios_service { '5min-service':
     use                   => 'generic-service',
     register              => '0',
     normal_check_interval => '5',
+    tag                   => $nagios_server,
   }
   
   @@nagios_service { '30min-service':
     use                   => 'generic-service',
     register              => '0',
     normal_check_interval => '30',
+    tag                   => $nagios_server,
   }
 
 }

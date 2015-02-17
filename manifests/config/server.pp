@@ -27,10 +27,9 @@ class nagios::config::server (
   $cas_login_url    = undef,
   $cas_users        = [],
   $cas_validate_url = undef,
-  $enable_firewall  = true, ) {
+  $enable_firewall  = true, ) inherits nagios::params {
 
   include nagios::commands
-  include nagios::plugins::all
   include nagios::plugins::server
   include nagios::templates
   # A server is also a client
@@ -67,6 +66,14 @@ class nagios::config::server (
 
   # NSCA config
   file { '/etc/nagios/nagios_services.d':
+    ensure  => directory,
+    mode    => '0755',
+    owner   => 'root',
+    group   => 'nagios',
+    require => Package['nagios'],
+  }
+
+ file { '/etc/nagios/nagios_hosts.d':
     ensure  => directory,
     mode    => '0755',
     owner   => 'root',
@@ -151,34 +158,34 @@ class nagios::config::server (
   }
 
   # collect resources and populate /etc/nagios/nagios_*.cfg
-  Nagios_host <<| |>> {
+  Nagios_host <<| tag == $nagios_server |>> {
     notify => Service['nagios'],
   }
-  Nagios_service <<| |>> {
+  Nagios_service <<| tag == $nagios_server |>> {
     notify => Service['nagios'],
   }
-  Nagios_hostextinfo <<| |>> {
+  Nagios_hostextinfo <<| tag == $nagios_server |>> {
     notify => Service['nagios'],
   }
-  Nagios_servicedependency <<| |>> {
+  Nagios_servicedependency <<| tag == $nagios_server |>> {
     notify => Service['nagios'],
   }
-  Nagios_hostdependency <<| |>> {
+  Nagios_hostdependency <<| tag == $nagios_server |>> {
     notify => Service['nagios'],
   }
-  Nagios_contact <<| |>> {
+  Nagios_contact <<| tag == $nagios_server |>> {
     notify => Service['nagios'],
   }
-  Nagios_contactgroup <<| |>> {
+  Nagios_contactgroup <<| tag == $nagios_server |>> {
     notify => Service['nagios'],
   }
-  Nagios_command <<| |>> {
+  Nagios_command <<| tag == $nagios_server |>> {
     notify => Service['nagios'],
   }
-  Nagios_servicegroup <<| |>> {
+  Nagios_servicegroup <<| tag == $nagios_server |>> {
     notify => Service['nagios'],
   }
-  Nagios_hostgroup <<| |>> {
+  Nagios_hostgroup <<| tag == $nagios_server |>> {
     notify => Service['nagios'],
   }
 

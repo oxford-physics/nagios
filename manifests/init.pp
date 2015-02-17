@@ -47,7 +47,6 @@ class nagios (
   $hostgroups               = {
     'default' => {
       alias => 'default-hostgroup',
-      tag   => $::domain,
     }
   }
   ,
@@ -59,8 +58,7 @@ class nagios (
   $cas_users                = [],
   $cas_validate_url         = undef,
   $ensure                   = installed,
-  $enable_firewall          = true,
-  $nagios_server            = $::fqdn,) {
+  $enable_firewall          = true,) {
   if $is_server == true {
     class { 'nagios::install':
       is_server => true,
@@ -84,8 +82,8 @@ class nagios (
     class { 'nagios::services::client': }
 
     # add nagios checks
-    class { 'nagios::services::nagios':
-    }
+#    class { 'nagios::services::nagios':
+#    }
     
     # Add fix
     include nagios::fixes    
@@ -111,7 +109,9 @@ class nagios (
     }
 
     Class['nagios::install'] -> Class['nagios::config::server'] ->
-    Service['nagios'] -> Class['nagios::fixes'] ->  Service['nsca']
+    Class['nagios::fixes'] ->  Service['nagios'] ->  Service['nsca']
+
+
   } else {
     class { 'nagios::install': ensure => $ensure, }
 

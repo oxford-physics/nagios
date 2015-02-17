@@ -2,7 +2,7 @@
 class nagios::config::client (
   $allowed_hosts = ['127.0.0.1'],
   $hostgroups    = undef,
-  $enable_firewall  = true, ) {
+  $enable_firewall  = true, )inherits nagios::params {
   if $hostgroups == undef {
     # try and guess the correct group
     $local_hostgroups = $::hostname ? {
@@ -24,11 +24,12 @@ class nagios::config::client (
     ensure     => present,
     address    => $::ipaddress,
     use        => 'generic-host',
-    tag        => $::domain,
     # Insert parent value if we are a VM
     parents    => $::vmparent,
     action_url => "/nagios/pnp4nagios/graph?host=${::fqdn}",
     hostgroups => $local_hostgroups,
+    tag        => $nagios_server,
+    target     => "/etc/nagios/nagios_hosts.d/${::fqdn}.cfg",
   }
 
   # If we are a virtual host, also add host deps on parent
@@ -39,6 +40,7 @@ class nagios::config::client (
       host_name                     => $::vmparent,
       dependent_host_name           => $::fqdn,
       notification_failure_criteria => 'd,u',
+      tag                           => $nagios_server,
     }
   }
 
@@ -48,7 +50,7 @@ class nagios::config::client (
     icon_image_alt  => $::operatingsystem,
     icon_image      => "${::operatingsystem}.png",
     statusmap_image => "${::operatingsystem}.gd2",
-    tag             => $::domain,
+    tag             => $nagios_server,
   }
 
   # Install base nrpe config

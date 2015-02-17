@@ -3,8 +3,7 @@ class nagios::install (
   $ensure    = installed,
   $is_server = false,) {
   # for both client and server
-  class { 'nagios::cron::kernel_passive': }
-  include nagios::plugins::core
+#  class { 'nagios::cron::kernel_passive': }
 
   $nrpe_name = $::osfamily ? {
     'RedHat' => 'nrpe',
@@ -30,7 +29,6 @@ class nagios::install (
 
   package { 'nagios-plugins':
     ensure  => $ensure,
-    require => Class['grid_repos'],
   }
 
   # OS family specific names
@@ -38,10 +36,8 @@ class nagios::install (
     package { [
       'nagios-plugins-all',
       'nagios-plugins-perl',
-#      'nagios-plugins-check-tcptraffic',
       'perl-DateTime']:
       ensure  => $ensure,
-      require => Class['grid_repos'],
     }
   }
 

@@ -1,12 +1,12 @@
 # ### PING
-class nagios::services::ping {
+class nagios::services::ping inherits nagios::params {
   @@nagios_service { "check_ping_${::fqdn}":
     check_command       => 'check_ping',
     host_name           => $::fqdn,
     service_description => 'Ping',
     use                 => '1min-service',
     target		=> "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
-    tag                 => $::domain,
+    tag                 => $nagios_server,
   }
 
   if ($::ipaddress6) {
@@ -15,7 +15,7 @@ class nagios::services::ping {
       host_name           => $::fqdn,
       service_description => 'Ping IPv6',
       use                 => '1min-service',
-      tag                 => $::domain,
+      tag                 => $nagios_server,
     }
   }
 }
