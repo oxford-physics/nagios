@@ -1,4 +1,6 @@
 # Core Nagios plugins used on all servers
+
+###### This file is not used for puppet module. 
 class nagios::plugins::core (
   $n_user_warning  = 5,
   $n_user_critical = 10,) {
@@ -53,13 +55,6 @@ class nagios::plugins::core (
     command => 'check_procs_perfdata -w 300 -c 500',
   }
 
-  nagios::plugin { 'check_uptime': }
-
-  nagios::config::nrpe { 'check_uptime': command => 'check_uptime', }
-
-  nagios::plugin { 'check_yum': }
-
-  nagios::config::nrpe { 'check_yum': command => 'check_yum --all-updates', }
 
   nagios::plugin { 'check_selinux': }
 
@@ -75,35 +70,12 @@ class nagios::plugins::core (
     command => 'check_x509cert -P /etc/httpd/certs/',
   }
 
-  # Load average depends on number of CPU cores
-#  $single = $::processorcount
-#  $double = $::processorcount * 2
-#  $triple = $::processorcount * 3
-#  $warnload = "${double},${single},${single}"
-#  $critload = "${triple},${double},${double}"
 
-  # command => "check_load -w $warnload,$warnload,$warnload
-  # -c $critload,$critload,$critload",
-  nagios::config::nrpe   { 'check_load':
-#    command => "check_load -w ${warnload} -c ${critload}",
-   command => 'check_load -r -w 1.6, 1.4, 1.2 -c 2, 1.8, 1.5',
-  }
-
-  nagios::config::nrpe { 'check_disk_all':
-    command => 'check_disk -l -X fuse -x /dev/shm -w 10% -c 5%',
-  }
 
   nagios::config::nrpe { 'check_smtp':
     command => 'check_smtp -H 127.0.0.1',
   }
 
-  nagios::config::nrpe { 'check_zombie_procs':
-    command => 'check_procs -w 20 -c 40 -s Z',
-  }
-
-  nagios::config::nrpe { 'check_swap':
-    command => 'check_swap -w 50% -c 20%',
-  }
 
   nagios::config::nrpe { 'check_users':
     command => 'check_users -w 5 -c 10',

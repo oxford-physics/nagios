@@ -6,7 +6,7 @@ class nagios::services::puppet {
     service_description => 'puppet',
     use                 => 'hourly-service',
     target		=> "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
-    tag                 => $::domain,
+    tag                 => $nagios_server,
   }
 
 }

@@ -4,23 +4,23 @@ class nagios::profile::standard {
   # ### CURRENT USERS
 #   include nagios::services::current_users
   # ### LOAD
-#   include nagios::services::load
+   include nagios::services::load
   # ### ZOMBIE PROCS
-#   include nagios::services::zombies
+   include nagios::services::zombies
   # ### TOTAL PROCS
 #   include nagios::services::total_procs
   # ### SWAP
-#   include nagios::services::swap
+   include nagios::services::swap
   # ### DISK SPACE
-#   include nagios::services::disk_space
+   include nagios::services::disk_space
   # yum
- #  include nagios::services::yum
+   include nagios::services::yum
   # ### MEMORY
- #  include nagios::services::memory
+   include nagios::services::memory
   # ### UPTIME
 #   include nagios::services::uptime
   # ### NRPE
-#   include nagios::services::nrpe
+   include nagios::services::nrpe
   # ### AAAA RECORD
  #  include nagios::services::aaaa_record
   # ### CPU
