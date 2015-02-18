@@ -1,5 +1,6 @@
 # This class includes a passive Nagios check to monitor the kernel status
-class nagios::cron::kernel_passive {
+class nagios::cron::kernel_passive inherits nagios::params {
+   nagios::plugin {'check_kernel_passive':}
   # Run check on boot
   cron { 'kernel-passive-reboot':
     command => '/usr/lib64/nagios/plugins/check_kernel_passive',
@@ -40,7 +41,8 @@ class nagios::cron::kernel_passive {
     check_freshness       => 1,
     freshness_threshold   => 172800,
     check_command         => $dummy_command,
-    tag                   => $::domain,
+    tag                   => $nagios_server,
+    target                => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     servicegroups         => 'kernel',
   }
 }

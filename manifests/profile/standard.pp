@@ -1,28 +1,17 @@
 class nagios::profile::standard {
-
+   include  nagios::cron::kernel_passive
    include nagios::services::ping
-  # ### CURRENT USERS
-#   include nagios::services::current_users
-  # ### LOAD
+   #include nagios::services::current_users
    include nagios::services::load
-  # ### ZOMBIE PROCS
    include nagios::services::zombies
-  # ### TOTAL PROCS
-#   include nagios::services::total_procs
-  # ### SWAP
+   #include nagios::services::total_procs
    include nagios::services::swap
-  # ### DISK SPACE
    include nagios::services::disk_space
-  # yum
    include nagios::services::yum
-  # ### MEMORY
-   include nagios::services::memory
-  # ### UPTIME
-#   include nagios::services::uptime
-  # ### NRPE
+   #include nagios::services::memory
+   #include nagios::services::uptime
    include nagios::services::nrpe
-  # ### AAAA RECORD
- #  include nagios::services::aaaa_record
+   #include nagios::services::aaaa_record
   # ### CPU
    # include nagios::services::cpu
   # ### Puppet client

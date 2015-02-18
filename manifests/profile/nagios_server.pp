@@ -1,22 +1,15 @@
 class nagios::profile::nagios_server {
 
    include nagios::services::ping
-  # ### LOAD
-#   include nagios::services::load
-  # ### ZOMBIE PROCS
+   include nagios::services::load
    include nagios::services::zombies
-  # ### DISK SPACE
    include nagios::services::disk_space
-  # yum
- #  include nagios::services::yum
- # ### MEMORY
-   include nagios::services::memory
-  # ### NRPE
+   include nagios::services::yum
+  # include nagios::services::memory
    include nagios::services::nrpe
-  # ### AAAA RECORD
- #  include nagios::services::aaaa_record
-  # ### CPU
-   # include nagios::services::cpu
+  # include nagios::services::aaaa_record
+  # include nagios::services::cpu
+
   # ### Puppet client
 #   include nagios::services::puppet
   # Now add the check for each individual interface on this machine
