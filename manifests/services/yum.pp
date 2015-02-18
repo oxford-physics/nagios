@@ -1,7 +1,7 @@
 # Nagios tests for yum
 class nagios::services::yum inherits nagios::params {
    nagios::plugin { 'check_yum': }
-   nagios::config::nrpe { 'check_yum': command => 'check_yum --all-updates', }
+   nagios::config::nrpe { 'check_yum': command => 'check_yum --warn-on-any-update', }
   
   #  does notwork with SELinux
   @@nagios_service { "check_yum_${::fqdn}":
