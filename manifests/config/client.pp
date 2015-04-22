@@ -3,20 +3,7 @@ class nagios::config::client (
   $allowed_hosts = ['127.0.0.1'],
   $hostgroups    = undef,
   $enable_firewall  = true, )inherits nagios::params {
-  if $hostgroups == undef {
-    # try and guess the correct group
-    $local_hostgroups = $::hostname ? {
-      /^dhcp\d+/   => 'dhcp-servers',
-      /^dns\d+/    => 'dns-servers',
-      /^web\d+/    => 'web-servers',
-      /^webdev/    => 'dev-servers',
-      /^build\d+/  => 'dev-servers',
-      /^db\d+/     => 'db-servers',
-      /^syslog\d+/ => 'syslog-servers',
-      default      => undef,
-    } } else {
-    $local_hostgroups = $hostgroups
-  }
+  $local_hostgroups = $hostgroups
 
   # Define the host in nagios, including parent hypervisor, if there is one
 
