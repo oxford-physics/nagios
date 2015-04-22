@@ -1,5 +1,8 @@
 # Monitoring of CPU usage
-class nagios::services::cpu {
+class nagios::services::cpu inherits nagios::params {
+  nagios::plugin { 'check_cpu': }
+  nagios::config::nrpe { 'check_cpu': command => 'check_cpu', }
+  
   @@nagios_service { "check_cpu_${::fqdn}":
     check_command       => 'check_nrpe!check_cpu',
     host_name           => $::fqdn,

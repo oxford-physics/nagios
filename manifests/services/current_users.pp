@@ -1,5 +1,8 @@
 #Monitor logged in users
-class nagios::services::current_users {
+class nagios::services::current_users inherits nagios::params {
+   nagios::config::nrpe { 'check_users':
+    command => 'check_users -w 5 -c 10',
+  }
   @@nagios_service { "check_users_${::fqdn}":
     check_command       => 'check_nrpe!check_users',
     host_name           => $::fqdn,
