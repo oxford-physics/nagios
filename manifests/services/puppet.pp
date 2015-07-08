@@ -1,5 +1,13 @@
-# ### PING
-class nagios::services::puppet {
+# ### Puppet 
+class nagios::services::puppet inherits nagios::params {
+
+  nagios::plugin { 'check_puppet': }   
+  
+  nagios::config::nrpe { 'check_puppet':
+  command => 'check_puppet -w 3600 -c 7200',
+  sudo => true,
+}  
+
   @@nagios_service { "check_puppet_${::fqdn}":
     check_command       => 'check_nrpe!check_puppet',
     host_name           => $::fqdn,
