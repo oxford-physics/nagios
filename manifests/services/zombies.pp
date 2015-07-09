@@ -2,7 +2,7 @@
 class nagios::services::zombies inherits nagios::params {
   
    nagios::config::nrpe { 'check_zombie_procs':
-    command => 'check_procs -w 20 -c 40 -s Z',
+    command => 'check_procs -w 40 -c 80 -s Z',
   }
   @@nagios_service { "check_zombie_procs_${::fqdn}":
     check_command       => 'check_nrpe!check_zombie_procs',
