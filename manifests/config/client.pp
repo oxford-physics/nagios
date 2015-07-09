@@ -51,13 +51,24 @@ class nagios::config::client (
     notify  => Service['nrpe'],
   }
 
+  file { '/etc/sudoers.d/nrpe':
+    ensure  => present,
+    mode    => '0440',
+    owner   => 'root',
+    group   => 'root',
+    source  => 'puppet:///modules/nagios/nrpe',
+    require => Package['nrpe'],
+    notify  => Service['nrpe'],
+  }
+
+
   # install base send_nsca.cfg
   file {'/etc/nagios/send_nsca.cfg':
-    ensure => present,
+    ensure  => present,
     mode    => '0644',
     owner   => 'root',
     group   => 'root',
-    source => 'puppet:///modules/nagios/send_nsca.cfg',
+    source  => 'puppet:///modules/nagios/send_nsca.cfg',
     require => Package['nsca-client'],
   }
 
