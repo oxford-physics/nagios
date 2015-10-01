@@ -75,6 +75,11 @@ class nagios::config::servicegroups (
     alias => 'hardware',
     tag   => $servicegroup_tag,
   }
+   nagios_servicegroup { 'ipmi':
+    alias => 'ipmi',
+    tag   => $servicegroup_tag,
+  }
+
 
 
   # create additional service groups

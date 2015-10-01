@@ -66,6 +66,10 @@ class nagios::commands {
   nagios_command { 'check_http_vhost_ssl':
     command_line => '$USER1$/check_http -H $ARG1$ -S -u $ARG2$',
   }
+  
+  nagios_command { 'check_http_ipmi':
+    command_line => '$USER1$/check_http -H $ARG1$',
+  }
 
   nagios_command { 'check_ssh':
     command_line => '$USER1$/check_ssh $ARG1$ $HOSTADDRESS$',

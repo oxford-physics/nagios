@@ -95,4 +95,12 @@ class nagios::templates inherits nagios::params {
     tag                   => $nagios_server,
   }
 
+  @@nagios_service { '12hour-service':
+    use                   => 'generic-service',
+    register              => '0',
+    normal_check_interval => '720',
+    tag                   => $nagios_server,
+  }
+
+
 }

@@ -8,6 +8,7 @@ class nagios::profile::standard {
    include nagios::services::swap
    include nagios::services::disk_space
    include nagios::services::yum
+   include nagios::services::ipmi
    #include nagios::services::memory
    #include nagios::services::uptime
    include nagios::services::nrpe
