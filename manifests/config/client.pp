@@ -1,22 +1,25 @@
 # Configuration for Nagios client
 class nagios::config::client (
-  $allowed_hosts = ['127.0.0.1'],
-  $hostgroups    = undef,
-  $enable_firewall  = true, )inherits nagios::params {
+  $allowed_hosts            = ['127.0.0.1'],
+  $hostgroups               = undef,
+  $host_notification_enable = '1',
+  $enable_firewall          = true, 
+  )inherits nagios::params {
   $local_hostgroups = $hostgroups
 
   # Define the host in nagios, including parent hypervisor, if there is one
 
   @@nagios_host { $::fqdn:
-    ensure     => present,
-    address    => $::ipaddress,
-    use        => 'generic-host',
+    ensure                => present,
+    address               => $::ipaddress,
+    use                   => 'generic-host',
     # Insert parent value if we are a VM
-    parents    => $::vmparent,
-    action_url => "/nagios/pnp4nagios/graph?host=${::fqdn}",
-    hostgroups => $local_hostgroups,
-    tag        => $nagios_server,
-    target     => "/etc/nagios/nagios_hosts.d/${::fqdn}.cfg",
+    parents               => $::vmparent,
+    notifications_enabled => $host_notification_enable,
+    action_url            => "/nagios/pnp4nagios/graph?host=${::fqdn}",
+    hostgroups            => $local_hostgroups,
+    tag                   => $nagios_server,
+    target                => "/etc/nagios/nagios_hosts.d/${::fqdn}.cfg",
   }
 
   # If we are a virtual host, also add host deps on parent

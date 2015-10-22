@@ -68,7 +68,7 @@ class nagios::commands {
   }
   
   nagios_command { 'check_http_ipmi':
-    command_line => '$USER1$/check_http -H $ARG1$',
+    command_line => '$USER1$/check_http -S -H $ARG1$',
   }
 
   nagios_command { 'check_ssh':

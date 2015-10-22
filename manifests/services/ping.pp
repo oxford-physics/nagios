@@ -15,6 +15,7 @@ class nagios::services::ping inherits nagios::params {
       host_name           => $::fqdn,
       service_description => 'Ping IPv6',
       use                 => '1min-service',
+      target              => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
       tag                 => $nagios_server,
     }
   }

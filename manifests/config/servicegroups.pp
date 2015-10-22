@@ -80,6 +80,10 @@ class nagios::config::servicegroups (
     tag   => $servicegroup_tag,
   }
 
+   nagios_servicegroup { 'condor':
+    alias => 'condor',
+    tag   => $servicegroup_tag,
+  }
 
 
   # create additional service groups

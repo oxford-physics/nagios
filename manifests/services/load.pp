@@ -1,7 +1,7 @@
 # Monitoring of the CPU load
 class nagios::services::load (
   $load_notification = '1',
-  $load_command      = 'check_load -r -w 1.5, 1.4 1.3 -c 1.8, 1.7, 1.6'
+  $load_command      = 'check_load -r -w 1.5, 1.4, 1.3 -c 1.8, 1.7, 1.6'
 ) inherits nagios::params {
   
   nagios::config::nrpe { 'check_load':
@@ -13,7 +13,7 @@ class nagios::services::load (
     service_description   => 'Load',
     use                   => '3min-service',
     servicegroups         => 'load',
-    notifications_enabled => '$load_notification',
+    notifications_enabled => $load_notification,
     target                => "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                   => $nagios_server,
   }
