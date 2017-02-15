@@ -20,7 +20,7 @@ class nagios::commands {
   }
 
   nagios_command { 'check-host-alive':
-    command_line => '$USER1$/check_ping -H $HOSTADDRESS$ -w 1000.0,20% -c 3000.0,90% -p 5',
+    command_line => '$USER1$/check_icmp -H $HOSTADDRESS$ -w 1000.0,20% -c 3000.0,90% -p 5',
   }
 
   nagios_command { 'check_local_disk':
@@ -79,10 +79,12 @@ class nagios::commands {
     command_line => '$USER1$/check_dhcp $ARG1$',
   }
 
+  nagios_command { 'check_icmp':
+    command_line => '$USER1$/check_icmp -H $HOSTADDRESS$ -w 100,10% -c 1000,50% -p 5',
+  }
   nagios_command { 'check_ping':
     command_line => '$USER1$/check_ping -H $HOSTADDRESS$ -w 100,10% -c 1000,50% -p 5',
   }
-
   nagios_command { 'check_ping_v6':
     command_line => '$USER1$/check_ping -H $ARG1$ -w 100,10% -c 1000,50% -p 5 -6',
   }

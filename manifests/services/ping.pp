@@ -1,10 +1,10 @@
 # ### PING
 class nagios::services::ping inherits nagios::params {
   @@nagios_service { "check_ping_${::fqdn}":
-    check_command       => 'check_ping',
+    check_command       => 'check_icmp',
     host_name           => $::fqdn,
     service_description => 'Ping',
-    use                 => '1min-service',
+    use                 => '3min-service',
     target		=> "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                 => $nagios_server,
   }

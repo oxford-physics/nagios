@@ -1,8 +1,11 @@
 # Monitoring disk space
-class nagios::services::disk_space inherits nagios::params {
+class nagios::services::disk_space (
+     $disk_space_command = 'check_disk -l -X fuse -x /dev/shm -w 10% -c 5%'
+
+ )inherits nagios::params {
   
   nagios::config::nrpe { 'check_disk_all':
-   command => 'check_disk -l -X fuse -x /dev/shm -w 10% -c 5%',
+   command => $disk_space_command,
   }  
   
   @@nagios_service { "check_disk_${::fqdn}":
