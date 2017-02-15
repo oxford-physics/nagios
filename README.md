@@ -15,6 +15,16 @@ This module to sets up Nagios monitoring for your infrastructure which includes:
  
 Usage
 ====================
+Server Installation
+ include nagios
+
+passed these parameters from Hiera
+  nagios::is_server: true
+  nagios::use_mod_auth_cas: false
+  nagios::params::nagios_server: 'FQDN of server'
+  nagios::params::profile_type: 'nagios_server'
+  nagios::allowed_hosts:
+      - 'FQDN of Server''
 
 
 
