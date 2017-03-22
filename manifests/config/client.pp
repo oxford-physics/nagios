@@ -121,8 +121,9 @@ class nagios::config::client (
   User <| title == 'nrpe' |>
 
   # Elsewhere add to the parameters for that virtual resource using plusignment
-  User <| title == 'nrpe' |> {
-    groups +> 'puppet'
-  }
+  # Apparently not required in CS7
+#  User <| title == 'nrpe' |> {
+#    groups +> 'puppet'
+#  }
 
 }
