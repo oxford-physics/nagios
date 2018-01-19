@@ -84,6 +84,12 @@ class nagios::config::servicegroups (
     alias => 'condor',
     tag   => $servicegroup_tag,
   }
+  
+    nagios_servicegroup { 'vulnerability':
+    alias => 'vulnerability',
+    tag   => $servicegroup_tag,
+  }
+
 
 
   # create additional service groups
