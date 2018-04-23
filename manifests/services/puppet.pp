@@ -1,7 +1,15 @@
 # ### Puppet 
 class nagios::services::puppet inherits nagios::params {
 
-  nagios::plugin { 'check_puppet': }   
+  nagios::plugin { 'check_puppet': } 
+  
+  file {'/etc/sudoers.d/sudo_puppet' :
+       mode    => '0644',
+       owner   => 'root',
+       group   => 'root',
+       content => "NRPE     ALL=(ALL)       NOPASSWD: /usr/lib64/nagios/plugins/check_puppet\n"
+    }
+
   
   nagios::config::nrpe { 'check_puppet':
   command => 'check_puppet -w 3600 -c 7200',
