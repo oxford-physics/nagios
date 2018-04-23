@@ -1,5 +1,4 @@
 User_Alias NRPE = nrpe
 Cmnd_Alias NRPECOMMANDS = /usr/lib64/nagios/plugins/
 Defaults:nrpe !requiretty
-NRPE     ALL=(ALL)       NOPASSWD: NRPECOMMANDS
 
