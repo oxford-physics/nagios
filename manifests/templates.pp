@@ -28,7 +28,7 @@ class nagios::templates inherits nagios::params {
     retry_interval               => '2',
     max_check_attempts           => '5',
     check_command                => 'check-host-alive',
-    notification_interval        => '0',
+    notification_interval        => '180',
     notification_options         => 'd,r',
     tag                          => $nagios_server,
   }
