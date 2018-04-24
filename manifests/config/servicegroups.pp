@@ -85,6 +85,12 @@ class nagios::config::servicegroups (
     alias => 'ipmi',
     tag   => $servicegroup_tag,
   }
+  
+    nagios_servicegroup { 'puppet':
+    alias => 'puppet',
+    tag   => $servicegroup_tag,
+  }
+
 
    nagios_servicegroup { 'condor':
     alias => 'condor',
