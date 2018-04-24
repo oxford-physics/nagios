@@ -23,6 +23,7 @@ class nagios::services::puppet inherits nagios::params {
     host_name           => $::fqdn,
     service_description => 'puppet',
     use                 => 'hourly-service',
+    servicegroups       => 'puppet',
     target		=> "/etc/nagios/nagios_services.d/${::fqdn}.cfg",
     tag                 => $nagios_server,
   }
