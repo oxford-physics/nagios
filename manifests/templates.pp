@@ -55,7 +55,7 @@ class nagios::templates inherits nagios::params {
     retry_check_interval         => '1',
     contact_groups               => 'admins',
     notification_options         => 'w,c,r',
-    notification_interval        => '0',
+    notification_interval        => '180',
     notification_period          => '24x7',
     register                     => '0',
     tag                          => $nagios_server,
