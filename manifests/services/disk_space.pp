@@ -1,6 +1,6 @@
 # Monitoring disk space
 class nagios::services::disk_space (
-     $disk_space_command = 'check_disk -l -X fuse -x /dev/shm -w 10% -c 5%'
+     $disk_space_command = 'check_disk -l -X fuse -X fuse.xrdp-chansrv -x /dev/shm -w 10% -c 5%'
 
  )inherits nagios::params {
   
